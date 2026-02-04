@@ -1,14 +1,59 @@
 :root[data-org="troop"] {
-  --accent: #1f5b4a;
+  --accent: #996633; /* Brown */
   --accent-contrast: #ffffff;
-  --header-bg: #e3f2ed;
-  --header-border: #c2dbd1;
-  --header-bg-dark: #0f2420;
-  --header-border-dark: #1f3f37;
-  --hero-bg: linear-gradient(135deg, #e3f2ed 0%, #f6e7bf 100%);
-  --hero-border: #c6ded4;
-  --hero-bg-dark: linear-gradient(135deg, #11362e 0%, #2b2413 100%);
-  --hero-border-dark: #275045;
-  --hero-text: #102420;
-  --hero-text-dark: #f5f7fb;
+  --accent-secondary: #ce1126; /* Scouting Red */
+  --accent-tertiary: #003f87; /* Scouting Blue */
+  --button-bg: #ce1126;
+  --button-text: #ffffff;
+}
+
+:root[data-org="troop"][data-theme="light"] {
+  --bg: #f4f1ea; /* Uniform tan tint */
+  --surface: #ffffff;
+  --surface-2: #f0eadd;
+  --surface-muted: #e6d9c2;
+  --text: #3e2b20;
+  --muted: #5d4037;
+  --placeholder: #7a6356;
+  --border: #dccfb9;
+
+  --hero-from: #f4f1ea;
+  --hero-to: #e8e0d5;
+  --hero-text: #3e2b20;
+  --header-bg: #f4f1ea;
+  --header-border: #dccfb9;
+  --header-text: #3e2b20;
+}
+
+:root[data-org="troop"][data-theme="dark"] {
+  --accent: #deb887; /* Burlywood for links */
+  --accent-contrast: #1b130b;
+  --accent-secondary: #ce1126;
+  --accent-tertiary: #7aa7d8;
+  --button-bg: #b91c1c;
+  --button-text: #ffffff;
+
+  --header-bg: #3e2b20;
+  --header-border: #523e2a;
+  --header-text: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-org="troop"]:not([data-theme]) {
+    --bg: #f4f1ea;
+    --surface: #ffffff;
+    --surface-2: #f0eadd;
+    --surface-muted: #e6d9c2;
+    --text: #3e2b20;
+    --muted: #5d4037;
+    --placeholder: #7a6356;
+    --border: #dccfb9;
+
+    --hero-from: #f4f1ea;
+    --hero-to: #e8e0d5;
+    --hero-text: #3e2b20;
+    --header-bg: #f4f1ea;
+    --header-border: #dccfb9;
+    --header-text: #3e2b20;
+  }
 }

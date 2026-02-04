@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Theme Preview</title>
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="./assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="./assets/js/theme.js" defer></script>
+  <style>
+    .preview-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+
+    .swatch {
+      border-radius: 10px;
+      padding: 12px;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 12px;
+    }
+
+    .swatch.light {
+      color: #111;
+    }
+
+    .surface-box {
+      padding: 14px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .surface-muted {
+      background: var(--surface-muted);
+    }
+
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      font-size: 12px;
+    }
+
+    .chip.primary {
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border-color: color-mix(in srgb, var(--accent) 70%, var(--border));
+    }
+
+    .chip.secondary {
+      background: var(--accent-secondary);
+      color: #ffffff;
+      border-color: color-mix(in srgb, var(--accent-secondary) 70%, var(--border));
+    }
+
+    .chip.tertiary {
+      background: var(--accent-tertiary);
+      color: #ffffff;
+      border-color: color-mix(in srgb, var(--accent-tertiary) 70%, var(--border));
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header class="header no-print">
+    <div class="header-inner container">
+      <div>
+        <strong>Theme Preview</strong>
+        <div class="muted">Verify Pack/Troop colors and light/dark variants.</div>
+      </div>
+      <div class="theme-controls" aria-label="Theme settings">
+        <div class="theme-control">
+          <label for="orgSelect">Organization</label>
+          <select id="orgSelect" data-theme-control="org">
+            <option value="pack">Cub Scouts Pack</option>
+            <option value="troop">Scouting America Troop</option>
+          </select>
+        </div>
+        <div class="theme-control">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect" data-theme-control="mode">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container stack" style="padding: 24px 16px 40px;">
+    <section class="hero stack">
+      <div class="stack" style="gap: 10px;">
+        <span class="badge">Theme Preview</span>
+        <h1>Scout Tools Theme Tokens</h1>
+        <p class="muted">This page previews the current palette, surfaces, and accents for Pack/Troop themes.</p>
+      </div>
+      <div class="row">
+        <button class="primary">Primary Button</button>
+        <button>Secondary Button</button>
+      </div>
+    </section>
+
+    <section class="stack">
+      <h2>Core Colors</h2>
+      <div class="preview-grid">
+        <div class="card stack">
+          <div class="swatch" style="background: var(--accent);">Primary</div>
+          <div class="swatch" style="background: var(--accent-secondary);">Secondary</div>
+          <div class="swatch" style="background: var(--accent-tertiary);">Tertiary</div>
+          <div class="note">Accent tokens control buttons, badges, and highlights.</div>
+        </div>
+        <div class="card stack">
+          <div class="swatch light" style="background: var(--bg);">Background</div>
+          <div class="swatch light" style="background: var(--surface);">Surface</div>
+          <div class="swatch light" style="background: var(--surface-2);">Surface 2</div>
+          <div class="swatch light" style="background: var(--surface-muted);">Muted Surface</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stack">
+      <h2>Surface Samples</h2>
+      <div class="preview-grid">
+        <div class="surface-box stack">
+          <strong>Standard Card</strong>
+          <p class="muted">Readable body text sits here. Buttons and links should feel calm.</p>
+          <div class="chip-row">
+            <span class="chip">Neutral</span>
+            <span class="chip primary">Primary</span>
+            <span class="chip secondary">Secondary</span>
+            <span class="chip tertiary">Tertiary</span>
+          </div>
+        </div>
+        <div class="surface-box surface-muted stack">
+          <strong>Muted Surface</strong>
+          <p class="muted">Use this for badges, table headers, or subtle callouts.</p>
+          <a class="button" href="./">Back to tools</a>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
