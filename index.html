@@ -16,13 +16,41 @@
         <strong>Scout Tools</strong>
         <div class="muted">Fast, offline-friendly tools for Packs & Troops</div>
       </div>
-      <span class="badge">Static-first</span>
+      <div class="theme-controls" aria-label="Theme settings">
+        <div class="theme-control">
+          <label for="orgSelect">Organization</label>
+          <select id="orgSelect" data-theme-control="org">
+            <option value="pack">Cub Scouts Pack</option>
+            <option value="troop">Scouting America Troop</option>
+          </select>
+        </div>
+        <div class="theme-control">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect" data-theme-control="mode">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+      </div>
     </div>
   </header>
 
   <main class="container stack" style="padding: 24px 16px 40px;">
-    <section class="stack">
-      <h1>Tool Library</h1>
+    <section class="hero stack">
+      <div class="stack" style="gap: 10px;">
+        <span class="badge">Static-first · Offline-ready</span>
+        <h1>Friendly scouting utilities, now in full color.</h1>
+        <p class="muted">Switch between Cub Scout pack and Scouting America troop palettes, plus light/dark modes that follow your device.</p>
+      </div>
+      <div class="row">
+        <a class="button primary" href="#tools">Open tools</a>
+        <a class="button" href="#offline">Offline tips</a>
+      </div>
+    </section>
+
+    <section class="stack" id="tools">
+      <h2>Tool Library</h2>
       <p class="muted">Pick a tool to open in a new page. Most tools work offline after first load.</p>
       <div class="grid cols-2">
         <a class="tile" href="./tools/uniform-inspection-checklist/">
@@ -38,7 +66,7 @@
       </div>
     </section>
 
-    <section class="card stack">
+    <section class="card stack" id="offline">
       <h2>Offline Tips</h2>
       <ul class="stack" style="gap: 8px; padding-left: 18px;">
         <li>Open each tool once to cache it for offline use.</li>

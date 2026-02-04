@@ -13,6 +13,14 @@
   --shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
   --header-bg: #ffffff;
   --header-border: #dddddd;
+  --header-bg-dark: #161a22;
+  --header-border-dark: #2a3140;
+  --hero-bg: linear-gradient(135deg, #ffffff, #f1f1f1);
+  --hero-border: #d9d9d9;
+  --hero-bg-dark: linear-gradient(135deg, #1f2430, #151922);
+  --hero-border-dark: #2a3140;
+  --hero-text: var(--text);
+  --hero-text-dark: #f5f7fb;
 }
 
 [data-theme="dark"] {
@@ -22,10 +30,11 @@
   --text: #f5f7fb;
   --muted: #b7c0cf;
   --border: #31384a;
-  --accent: #f5f7fb;
-  --accent-contrast: #0f1115;
-  --header-bg: #161a22;
-  --header-border: #2a3140;
+  --header-bg: var(--header-bg-dark);
+  --header-border: var(--header-border-dark);
+  --hero-bg: var(--hero-bg-dark);
+  --hero-border: var(--hero-border-dark);
+  --hero-text: var(--hero-text-dark);
 }
 
 *,
@@ -165,6 +174,42 @@ button:focus-visible,
   padding: 12px 16px;
 }
 
+.hero {
+  background: var(--hero-bg);
+  border: 1px solid var(--hero-border);
+  border-radius: calc(var(--radius) + 8px);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  color: var(--hero-text);
+}
+
+.theme-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.theme-control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+}
+
+.theme-control label {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.theme-control select {
+  border-color: var(--header-border);
+  background: var(--surface);
+}
+
 .card {
   background: var(--surface);
   border: 1px solid var(--header-border);
@@ -240,5 +285,21 @@ td {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0f1115;
+    --surface: #161a22;
+    --surface-muted: #1e2430;
+    --text: #f5f7fb;
+    --muted: #b7c0cf;
+    --border: #31384a;
+    --header-bg: var(--header-bg-dark);
+    --header-border: var(--header-border-dark);
+    --hero-bg: var(--hero-bg-dark);
+    --hero-border: var(--hero-border-dark);
+    --hero-text: var(--hero-text-dark);
   }
 }
