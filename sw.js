@@ -1,4 +1,4 @@
-const CACHE_NAME = "scout-tools-v3";
+const CACHE_NAME = "scout-tools-v4";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -13,6 +13,8 @@ const PRECACHE_URLS = [
   "./tools/uniform-inspection-checklist/index.html",
   "./tools/activity-timer/",
   "./tools/activity-timer/index.html",
+  "./tools/markdown-to-pdf/",
+  "./tools/markdown-to-pdf/index.html",
 ];
 
 // 1. Install: Cache the "Application Shell"
