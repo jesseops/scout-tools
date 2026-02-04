@@ -1,0 +1,82 @@
+/* base.css: minimal reset, layout, and shared components */
+:root {
+  --color-bg: #f8f9fa;
+  --color-fg: #222;
+  --color-accent: #0057b7;
+  --color-card: #fff;
+  --color-border: #d1d5db;
+  --radius: 0.5rem;
+  --space: 1rem;
+  --font: system-ui, sans-serif;
+}
+
+html {
+  box-sizing: border-box;
+  font-family: var(--font);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  min-height: 100%;
+}
+*, *:before, *:after { box-sizing: inherit; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space);
+}
+
+.stack { display: flex; flex-direction: column; gap: var(--space); }
+.grid { display: grid; gap: var(--space); }
+
+.header {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: var(--space);
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-accent);
+  text-decoration: none;
+  transition: box-shadow 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  min-height: 4rem;
+}
+.tile:focus-visible, .tile:hover {
+  outline: 2px solid var(--color-accent);
+  box-shadow: 0 2px 8px rgba(0,87,183,0.08);
+  z-index: 1;
+}
+
+.button {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75em 1.5em;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+.button:focus-visible, .button:hover {
+  background: #003974;
+}
+
+/* Accessibility */
+:focus-visible { outline: 2px solid var(--color-accent); }

@@ -1,342 +1,50 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="en" data-org="pack">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Uniform Inspection Score Sheet</title>
-
-  <!-- PDF export libs (client-side) -->
-  <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-
-  <link rel="stylesheet" href="shared.css" />
-
-  <style>
-    .toolbar {
-      position: sticky; top: 0; z-index: 10;
-      display:flex; gap:8px; align-items:center; justify-content:space-between;
-      padding: 12px 16px; background: #fff; border-bottom: 1px solid #ddd;
-    }
-    .toolbar .left { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    button.primary { background:#111; color:#fff; border-color:#111; }
-    .page {
-      max-width: 980px; margin: 16px auto; padding: 0 16px 24px;
-    }
-
-    /* "Paper" area that becomes the PDF */
-    .paper {
-      background:#fff; color:#000;
-      border: 1px solid #ddd; border-radius: 12px;
-      padding: 18px 18px 14px;
-      box-shadow: 0 6px 24px rgba(0,0,0,.08);
-    }
-
-    .header {
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items:end;
-      margin-bottom: 12px;
-    }
-    .title { font-weight: 800; font-size: 18px; margin: 0; }
-    .sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
-    .meta {
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .center { text-align:center; }
-    .right { text-align:right; }
-    .muted { color: var(--muted); font-size: 12px; }
-    .section-row td { background:#000; color:#fff; font-weight:700; }
-    .section-row td small { color:#ddd; font-weight:600; }
-    .scorebox {
-      display:flex; justify-content:flex-end; gap: 12px; margin-top: 10px; align-items:center;
-    }
-    .scorebox .total {
-      border: 2px solid #111; border-radius: 10px; padding: 10px 12px; min-width: 180px;
-      display:flex; justify-content:space-between; gap: 10px; font-weight: 800;
-    }
-    .scorebox .total span { display:inline-block; }
-    .footnote { margin-top: 10px; font-size: 12px; color: var(--muted); }
-
-    /* tighter inputs inside table */
-    .cell-num input, .cell-num select { padding: 6px 8px; border-radius: 6px; font-size: 13px; }
-    .what { width: 42%; }
-    .colA, .colB, .colC, .colPts { width: 14.5%; }
-
-    /* Print/PDF friendliness */
-    @media print {
-      body { background:#fff; }
-      .toolbar { display:none; }
-      .page { margin:0; padding:0; }
-      .paper { box-shadow:none; border:none; border-radius:0; }
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scout Tools</title>
+  <link rel="stylesheet" href="./assets/css/base.css" />
+  <link rel="stylesheet" href="./assets/css/theme-pack.css" data-theme-css="pack" />
+  <link rel="stylesheet" href="./assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="./assets/js/theme.js" defer></script>
 </head>
 <body>
-  <div class="toolbar">
-    <div class="left">
-      <button class="primary" id="btnExport">Export PDF</button>
-      <button id="btnPrint">Print</button>
-      <button id="btnReset">Reset</button>
-    </div>
-    <div class="muted">Scoring: Points = (B/A) × C</div>
-  </div>
-
-  <div class="page">
-    <div class="paper" id="pdfArea">
-      <div class="header">
-        <div>
-          <p class="title">Uniform Inspection Score Sheet</p>
-          <p class="sub">Form must be complete prior to turning in</p>
-        </div>
-
-        <div class="meta">
-          <div>
-            <label for="patrolName">Patrol Name</label>
-            <input id="patrolName" type="text" placeholder="e.g., VIKINGS" />
-          </div>
-          <div>
-            <label for="date">Date</label>
-            <input id="date" type="date" />
-          </div>
-          <div style="grid-column: 1 / -1;">
-            <label for="inspector">Printed Name of Inspector</label>
-            <input id="inspector" type="text" placeholder="e.g., Rick Garrick" />
-          </div>
-        </div>
-      </div>
-
-      <table>
-        <thead>
-          <tr>
-            <th class="what">What Inspected</th>
-            <th class="colA center">Total members<br><span class="muted">(A)</span></th>
-            <th class="colB center">Members that have item<br><span class="muted">(B)</span></th>
-            <th class="colC center">Points Allowed<br><span class="muted">(C)</span></th>
-            <th class="colPts center">Points<br><span class="muted">(B/A) × C</span></th>
-          </tr>
-        </thead>
-        <tbody id="rows"></tbody>
-      </table>
-
-      <div class="scorebox">
-        <div class="total">
-          <span>Total Score</span>
-          <span><span id="totalScore">0.00</span> / 100</span>
-        </div>
-      </div>
-
-      <div class="footnote">
-        Tip: Set <b>(A)</b> once, then fill <b>(B)</b>. (C) is editable if you want to match your exact scoring.
-      </div>
-    </div>
-  </div>
-
-<script>
-(() => {
-  // You can tweak this list to perfectly match your paper form.
-  // "type":"ratio" uses (B/A)*C. "type":"yesno" uses C if Yes else 0.
-  const ITEMS = [
-    { label: "Boy Scout Book (have to show it)", C: 20, type: "ratio" },
-
-    { label: "Totin' Chip", C: 2.5, type: "ratio" },
-    { label: "Fire'n Chit", C: 2.5, type: "ratio" },
-    { label: "Head Gear", C: 5, type: "ratio" },
-    { label: "Official Scout Hat/Beanie", C: 5, type: "ratio" },
-
-    { section: "Clothing", note: "" },
-    { label: "Shirt", C: 5, type: "ratio" },
-    { label: "Neckwear", C: 5, type: "ratio" },
-    { label: "Pants/Shorts", C: 10, type: "ratio" },
-    { label: "Belt", C: 5, type: "ratio" },
-    { label: "Socks", C: 10, type: "ratio" },
-
-    // On your paper, Patrol Flag is Yes/No — keep it simple:
-    { label: "Patrol Flag (Yes/No)", C: 5, type: "yesno" },
-
-    { section: "Patches", note: "" },
-    { label: "Right sleeve", C: 2.5, type: "ratio" },
-    { label: "US Flag", C: 7.5, type: "ratio" },
-    { label: "Patrol Emblem", C: 2, type: "ratio" },
-    { label: "Council Emblem", C: 3, type: "ratio" },
-    { label: "Troop Number", C: 5, type: "ratio" },
-    { label: "Rank", C: 5, type: "ratio" },
-    { label: "World Crest", C: 5, type: "ratio" },
-  ];
-
-  const rowsEl = document.getElementById("rows");
-  const totalEl = document.getElementById("totalScore");
-
-  function fmt(n) {
-    if (!isFinite(n)) return "0.00";
-    return (Math.round(n * 100) / 100).toFixed(2);
-  }
-
-  function calcRow(row) {
-    const A = Number(row.querySelector('[data-role="A"]')?.value || 0);
-    const C = Number(row.querySelector('[data-role="C"]')?.value || 0);
-    const type = row.getAttribute("data-type");
-
-    let pts = 0;
-
-    if (type === "yesno") {
-      const yn = row.querySelector('[data-role="YN"]')?.value || "No";
-      pts = (yn === "Yes") ? C : 0;
-      // show B as blank for yes/no rows
-      row.querySelector('[data-role="Bwrap"]').textContent = "—";
-    } else {
-      const B = Number(row.querySelector('[data-role="B"]')?.value || 0);
-      pts = (A > 0) ? (B / A) * C : 0;
-    }
-
-    row.querySelector('[data-role="PTS"]').textContent = fmt(pts);
-    return pts;
-  }
-
-  function calcAll() {
-    let total = 0;
-    for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
-      total += calcRow(tr);
-    }
-    totalEl.textContent = fmt(total);
-  }
-
-  function makeSectionRow(title, note) {
-    const tr = document.createElement("tr");
-    tr.className = "section-row";
-    tr.innerHTML = `<td colspan="5">${title} ${note ? `<small>${note}</small>` : ""}</td>`;
-    return tr;
-  }
-
-  function makeItemRow(item, idx) {
-    const tr = document.createElement("tr");
-    tr.setAttribute("data-item", "1");
-    tr.setAttribute("data-type", item.type);
-
-    const commonA = `
-      <td class="cell-num center">
-        <input data-role="A" type="number" min="0" step="1" inputmode="numeric" />
-      </td>
-    `;
-
-    const commonC = `
-      <td class="cell-num center">
-        <input data-role="C" type="number" min="0" step="0.5" inputmode="decimal" value="${item.C}" />
-      </td>
-    `;
-
-    let Bcell = "";
-    if (item.type === "yesno") {
-      Bcell = `<td class="cell-num center" data-role="Bwrap">
-        <select data-role="YN">
-          <option>No</option>
-          <option>Yes</option>
+  <div class="container stack">
+    <div class="header">Scout Tools</div>
+    <form id="theme-switcher" class="row" style="gap:1rem;align-items:center;">
+      <label>Org:
+        <select id="org-select">
+          <option value="pack">Cub Scouts</option>
+          <option value="troop">Scouts BSA</option>
         </select>
-      </td>`;
-    } else {
-      Bcell = `<td class="cell-num center" data-role="Bwrap">
-        <input data-role="B" type="number" min="0" step="1" inputmode="numeric" />
-      </td>`;
-    }
-
-    tr.innerHTML = `
-      <td>${item.label}</td>
-      ${commonA}
-      ${Bcell}
-      ${commonC}
-      <td class="center" data-role="PTS">0.00</td>
-    `;
-
-    // Recalc on changes
-    tr.addEventListener("input", calcAll);
-    tr.addEventListener("change", calcAll);
-    return tr;
-  }
-
-  // Build table
-  for (let i = 0; i < ITEMS.length; i++) {
-    const it = ITEMS[i];
-    if (it.section) {
-      rowsEl.appendChild(makeSectionRow(it.section, it.note || ""));
-    } else {
-      rowsEl.appendChild(makeItemRow(it, i));
-    }
-  }
-
-  // Convenience: when A changes on one row, optionally copy A to all ratio rows if desired
-  // (comment out if you don't want this behavior)
-  rowsEl.addEventListener("input", (e) => {
-    const target = e.target;
-    if (target?.dataset?.role === "A") {
-      const v = target.value;
-      for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
-        const A = tr.querySelector('[data-role="A"]');
-        if (A && A.value === "") A.value = v; // only fill blanks
-      }
-      calcAll();
-    }
-  });
-
-  // Buttons
-  document.getElementById("btnPrint").addEventListener("click", () => window.print());
-
-  document.getElementById("btnReset").addEventListener("click", () => {
-    if (!confirm("Clear all fields?")) return;
-    document.getElementById("patrolName").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("inspector").value = "";
-    for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
-      const A = tr.querySelector('[data-role="A"]'); if (A) A.value = "";
-      const B = tr.querySelector('[data-role="B"]'); if (B) B.value = "";
-      const YN = tr.querySelector('[data-role="YN"]'); if (YN) YN.value = "No";
-      // keep C defaults
-      tr.querySelector('[data-role="PTS"]').textContent = "0.00";
-    }
-    calcAll();
-  });
-
-  document.getElementById("btnExport").addEventListener("click", async () => {
-    calcAll(); // ensure totals are up to date
-
-    const area = document.getElementById("pdfArea");
-    const scale = 2; // higher = sharper PDF, larger file
-
-    // Render to canvas
-    const canvas = await html2canvas(area, { scale, useCORS: true, backgroundColor: "#ffffff" });
-    const imgData = canvas.toDataURL("image/png");
-
-    const { jsPDF } = window.jspdf;
-
-    // Letter size (8.5x11). Use "a4" if you prefer.
-    const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "letter" });
-
-    const pageW = pdf.internal.pageSize.getWidth();
-    const pageH = pdf.internal.pageSize.getHeight();
-
-    // Fit image to page with margins
-    const margin = 24;
-    const maxW = pageW - margin * 2;
-    const maxH = pageH - margin * 2;
-
-    const imgW = canvas.width;
-    const imgH = canvas.height;
-
-    const ratio = Math.min(maxW / imgW, maxH / imgH);
-    const drawW = imgW * ratio;
-    const drawH = imgH * ratio;
-
-    const x = (pageW - drawW) / 2;
-    const y = margin;
-
-    pdf.addImage(imgData, "PNG", x, y, drawW, drawH);
-    pdf.save(`uniform-inspection-${(document.getElementById("patrolName").value || "patrol").toLowerCase()}.pdf`);
-  });
-
-  // Initial calc
-  calcAll();
-})();
-</script>
+      </label>
+      <label>Theme:
+        <select id="theme-select">
+          <option value="system">System</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+      </label>
+    </form>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));">
+      <a class="tile" href="./forms/uniform-inspection.html">Uniform Inspection</a>
+      <!-- Add more tool tiles here as you add tools -->
+    </div>
+  </div>
+  <script>
+    // Theme/org switcher logic
+    const orgSel = document.getElementById('org-select');
+    const themeSel = document.getElementById('theme-select');
+    const pref = window.ScoutTheme.get();
+    orgSel.value = pref.org;
+    themeSel.value = pref.mode;
+    orgSel.addEventListener('change', () => {
+      window.ScoutTheme.set(orgSel.value, themeSel.value);
+    });
+    themeSel.addEventListener('change', () => {
+      window.ScoutTheme.set(orgSel.value, themeSel.value);
+    });
+  </script>
 </body>
 </html>
