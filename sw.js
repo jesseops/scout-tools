@@ -1,4 +1,4 @@
-const CACHE_NAME = "scout-tools-v4";
+const CACHE_NAME = "scout-tools-v5";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -8,6 +8,9 @@ const PRECACHE_URLS = [
   "./assets/css/theme-pack.css",
   "./assets/css/theme-troop.css",
   "./assets/js/theme.js",
+  "./assets/js/alpine.min.js",
+  "./assets/js/marked.min.js",
+  "./assets/js/html2pdf.bundle.min.js",
   // Ensure directory indices are handled if GH Pages doesn't auto-resolve them in SW
   "./tools/uniform-inspection-checklist/",
   "./tools/uniform-inspection-checklist/index.html",
