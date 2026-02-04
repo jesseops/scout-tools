@@ -16,8 +16,50 @@
       padding: 24px;
     }
 
+    .timer-ring {
+      position: relative;
+      width: clamp(220px, 45vw, 360px);
+      aspect-ratio: 1 / 1;
+      margin: 12px auto 8px;
+      display: grid;
+      place-items: center;
+    }
+
+    .timer-ring svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .ring-bg {
+      fill: none;
+      stroke: var(--surface-muted);
+      stroke-width: 8;
+    }
+
+    .ring-progress {
+      fill: none;
+      stroke: var(--accent);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.2s ease;
+    }
+
+    .ring-progress.low {
+      stroke: var(--accent-secondary);
+    }
+
+    .ring-center {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+
     .timer-display {
-      font-size: clamp(48px, 8vw, 96px);
+      font-size: clamp(44px, 7vw, 88px);
       font-weight: 800;
       letter-spacing: 2px;
     }
@@ -35,6 +77,7 @@
       gap: 12px;
       justify-content: center;
       margin-top: 16px;
+      align-items: flex-end;
     }
 
     .preset-row {
@@ -42,10 +85,20 @@
       flex-wrap: wrap;
       gap: 8px;
       justify-content: center;
+      margin-top: 12px;
     }
 
     .timer-input {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       max-width: 140px;
+      margin-bottom: 0;
+      align-self: flex-end;
+    }
+
+    .button-row {
+      display: contents;
     }
   </style>
 </head>
@@ -81,18 +134,25 @@
 
   <main class="container stack" style="padding: 24px 16px 40px;">
     <section class="card timer-card">
+      <div class="timer-ring">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+          <circle class="ring-progress" id="ringProgress" cx="60" cy="60" r="52"></circle>
+        </svg>
+        <div class="ring-center">
+          <div class="timer-display" id="display">05:00</div>
+        </div>
+      </div>
       <div class="timer-status" id="status">Ready</div>
-      <div class="timer-display" id="display">05:00</div>
-      <p class="muted">Set minutes, then tap Start.</p>
 
       <div class="controls">
         <label class="timer-input">
           Minutes
           <input id="minutesInput" type="number" min="1" max="120" value="5" inputmode="numeric" />
         </label>
-        <button class="primary" id="startBtn">Start</button>
-        <button id="pauseBtn">Pause</button>
-        <button id="resetBtn">Reset</button>
+        <button class="button primary" id="startBtn">Start</button>
+        <button class="button" id="pauseBtn">Pause</button>
+        <button class="button" id="resetBtn">Reset</button>
       </div>
 
       <div class="preset-row" aria-label="Preset timers">
@@ -103,17 +163,9 @@
       </div>
     </section>
 
-    <section class="card stack">
-      <h2>Tips</h2>
-      <ul class="stack" style="gap: 8px; padding-left: 18px;">
-        <li>Use preset buttons for quick den rotations.</li>
-        <li>Tap Reset to return to the last set time.</li>
-        <li>Works offline once opened.</li>
-      </ul>
-      <noscript>
-        <p class="muted">JavaScript is required for the countdown. You can still use this page as a quick reference for time blocks.</p>
-      </noscript>
-    </section>
+    <noscript>
+      <p class="muted">JavaScript is required for the countdown. You can still use this page as a quick reference for time blocks.</p>
+    </noscript>
   </main>
 
 <script>
@@ -125,6 +177,9 @@
   const pauseBtn = document.getElementById("pauseBtn");
   const resetBtn = document.getElementById("resetBtn");
   const presetButtons = document.querySelectorAll("[data-preset]");
+  const ring = document.getElementById("ringProgress");
+  const ringRadius = 52;
+  const ringCircumference = 2 * Math.PI * ringRadius;
 
   let timerId = null;
   let remainingSeconds = Number(minutesInput.value) * 60;
@@ -138,6 +193,12 @@
 
   const updateDisplay = () => {
     display.textContent = formatTime(remainingSeconds);
+    const ratio = baseSeconds > 0 ? remainingSeconds / baseSeconds : 0;
+    const offset = ringCircumference * (1 - ratio);
+    ring.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
+    ring.style.strokeDashoffset = offset;
+    const lowThreshold = Math.max(5, Math.round(baseSeconds * 0.1));
+    ring.classList.toggle("low", remainingSeconds > 0 && remainingSeconds <= lowThreshold);
   };
 
   const setStatus = (text) => {
@@ -203,6 +264,7 @@
     });
   });
 
+  ring.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
   updateDisplay();
 })();
 </script>
