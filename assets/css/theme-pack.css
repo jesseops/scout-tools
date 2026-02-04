@@ -1,6 +1,14 @@
 :root[data-org="pack"] {
-  --accent: #0067b8;
+  --accent: #0b4aa2;
   --accent-contrast: #ffffff;
-  --header-bg: #e8f2fb;
-  --header-border: #c7def3;
+  --header-bg: #e5f0ff;
+  --header-border: #bdd4f4;
+  --header-bg-dark: #0d1b30;
+  --header-border-dark: #1d3558;
+  --hero-bg: linear-gradient(135deg, #e5f0ff 0%, #fff1c7 100%);
+  --hero-border: #c8d9f2;
+  --hero-bg-dark: linear-gradient(135deg, #0d2a52 0%, #2a2310 100%);
+  --hero-border-dark: #2a3f63;
+  --hero-text: #102235;
+  --hero-text-dark: #f5f7fb;
 }

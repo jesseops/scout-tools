@@ -97,7 +97,26 @@
         <button class="primary" id="btnPrint">Print</button>
         <button id="btnReset">Reset</button>
       </div>
-      <div class="muted">Scoring: Points = (B/A) × C</div>
+      <div class="row" style="justify-content: flex-end;">
+        <div class="theme-controls" aria-label="Theme settings">
+          <div class="theme-control">
+            <label for="orgSelect">Organization</label>
+            <select id="orgSelect" data-theme-control="org">
+              <option value="pack">Cub Scouts Pack</option>
+              <option value="troop">Scouting America Troop</option>
+            </select>
+          </div>
+          <div class="theme-control">
+            <label for="modeSelect">Mode</label>
+            <select id="modeSelect" data-theme-control="mode">
+              <option value="system">System</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+        </div>
+        <div class="muted">Scoring: Points = (B/A) × C</div>
+      </div>
     </div>
   </header>
 

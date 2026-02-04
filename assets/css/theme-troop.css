@@ -1,6 +1,14 @@
 :root[data-org="troop"] {
-  --accent: #2f5d50;
+  --accent: #1f5b4a;
   --accent-contrast: #ffffff;
-  --header-bg: #e7f1ec;
-  --header-border: #c7ddd4;
+  --header-bg: #e3f2ed;
+  --header-border: #c2dbd1;
+  --header-bg-dark: #0f2420;
+  --header-border-dark: #1f3f37;
+  --hero-bg: linear-gradient(135deg, #e3f2ed 0%, #f6e7bf 100%);
+  --hero-border: #c6ded4;
+  --hero-bg-dark: linear-gradient(135deg, #11362e 0%, #2b2413 100%);
+  --hero-border-dark: #275045;
+  --hero-text: #102420;
+  --hero-text-dark: #f5f7fb;
 }
