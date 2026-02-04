@@ -11,6 +11,7 @@ This repo contains **Scout Tools**: a static collection of small utility pages f
   - Use **HTMX** for navigation/partial page updates where it reduces glue code.
   - Use **AlpineJS** only for tiny, localized behavior (toggles, small state).
   - Prefer vanilla JS for shared utilities (theme, offline, common helpers).
+  - If a tool depends on external libraries, prefer vendored local copies when possible.
 - **Offline-friendly**: cache core pages/assets so most tools work offline after first load.
 
 ## Non-Goals
@@ -124,6 +125,11 @@ Avoid absolute `/assets/...` unless you are certain you are deploying at the dom
 3. Build the page as semantic HTML with minimal JS.
 4. Add a tile link to `index.html`.
 5. If the tool should work offline reliably, add it to the service worker pre-cache list.
+
+Current tools:
+- `tools/uniform-inspection-checklist/index.html`
+- `tools/activity-timer/index.html`
+- `tools/markdown-to-pdf/index.html`
 
 Template snippet for a tool page:
 

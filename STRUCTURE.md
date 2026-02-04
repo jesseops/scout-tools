@@ -37,10 +37,17 @@ This document lays out the intended repository structure for Scout Tools, aligne
      - Minimal JS for start/pause/reset; works without JS as a static page.
      - Optional sounds/vibration should be toggled off by default.
 
+3. **Markdown to PDF (Leaders)**
+   - Path: `tools/markdown-to-pdf/index.html`
+   - Purpose: convert markdown into branded, printable PDFs for den meeting plans
+   - Notes:
+     - Supports Parent Handout, Leader Notes, Den Chief Instructions.
+     - Optional header logo and watermark uploads.
+     - Export should force light mode colors for print.
+
 ## Shared Conventions
 
 - **Relative paths** for assets and tool links to support GitHub Pages deployments.
 - **No external dependencies** unless vendored locally in `assets/js/`.
 - **Progressive enhancement**: tool pages should remain usable without JS.
 - **Accessibility**: focus-visible styles, large tap targets, and high contrast.
-
