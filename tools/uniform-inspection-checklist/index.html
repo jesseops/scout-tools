@@ -9,321 +9,205 @@
   <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
   <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
   <script src="../../assets/js/theme.js" defer></script>
-
-  <style>
-    .toolbar {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-    }
-
-    .page {
-      max-width: 980px;
-      margin: 16px auto;
-      padding: 0 16px 24px;
-    }
-
-    .paper {
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--header-border);
-      border-radius: 12px;
-      padding: 18px 18px 14px;
-      box-shadow: var(--shadow);
-    }
-
-    .header-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 12px;
-    }
-
-    .title { font-weight: 800; font-size: 18px; margin: 0; }
-    .sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
-
-    .meta {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .center { text-align: center; }
-    .section-row td { background: var(--accent); color: var(--accent-contrast); font-weight: 700; }
-    .section-row td small { color: rgba(255, 255, 255, 0.8); font-weight: 600; }
-
-    .scorebox {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 10px;
-      align-items: center;
-    }
-
-    .scorebox .total {
-      border: 2px solid var(--accent);
-      border-radius: 10px;
-      padding: 10px 12px;
-      min-width: 180px;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      font-weight: 800;
-      background: var(--surface-muted);
-    }
-
-    .footnote { margin-top: 10px; font-size: 12px; color: var(--muted); }
-
-    .cell-num input,
-    .cell-num select { padding: 6px 8px; border-radius: 6px; font-size: 13px; }
-    .what { width: 42%; }
-    .colA, .colB, .colC, .colPts { width: 14.5%; }
-
-    @media print {
-      body { background: #fff; }
-      .page { margin: 0; padding: 0; }
-      .paper { box-shadow: none; border: none; border-radius: 0; }
-    }
-  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
   <header class="header no-print">
-    <div class="toolbar container">
+    <div class="header-inner container">
       <div class="row">
         <a class="button" href="../../">Back to tools</a>
-        <button class="primary" id="btnPrint">Print</button>
-        <button id="btnReset">Reset</button>
+        <button class="primary" id="btnStart" type="button">Start inspection</button>
+        <button id="btnPrint" type="button">Print</button>
+        <button id="btnReset" type="button">Reset</button>
       </div>
-      <div class="row" style="justify-content: flex-end;">
-        <div class="theme-controls" aria-label="Theme settings">
-          <div class="theme-control">
-            <label for="orgSelect">Organization</label>
-            <select id="orgSelect" data-theme-control="org">
-              <option value="pack">Cub Scouts Pack</option>
-              <option value="troop">Scouting America Troop</option>
-            </select>
-          </div>
-          <div class="theme-control">
-            <label for="modeSelect">Mode</label>
-            <select id="modeSelect" data-theme-control="mode">
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          </div>
+      <div class="theme-controls" aria-label="Theme settings">
+        <div class="theme-control">
+          <label for="orgSelect">Organization</label>
+          <select id="orgSelect" data-theme-control="org">
+            <option value="pack">Cub Scouts Pack</option>
+            <option value="troop">Scouting America Troop</option>
+          </select>
         </div>
-        <div class="muted">Scoring: Points = (B/A) × C</div>
+        <div class="theme-control">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect" data-theme-control="mode">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
       </div>
     </div>
   </header>
 
-  <div class="page">
-    <div class="paper" id="scoreSheet">
-      <div class="header-grid">
-        <div>
-          <p class="title">Uniform Inspection Checklist</p>
-          <p class="sub">Complete all fields before turning in.</p>
+  <main class="container stack" style="padding: 24px 16px 40px;" x-data="inspectionSheet()" x-init="init()">
+    <form id="inspectionForm" class="stack">
+      <section class="stack">
+        <div class="stack">
+          <h1>Uniform Inspection Checklist</h1>
+          <p class="muted">Complete all fields before turning in.</p>
         </div>
 
-        <div class="meta">
+        <div class="grid cols-2">
           <div>
             <label for="patrolName">Patrol Name</label>
-            <input id="patrolName" type="text" placeholder="e.g., VIKINGS" />
+            <input id="patrolName" type="text" placeholder="e.g., Owls" x-model="patrolName" required />
+          </div>
+          <div>
+            <label for="patrolCount">Members Present</label>
+            <input id="patrolCount" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g., 7" x-model.number="present" required />
           </div>
           <div>
             <label for="date">Date</label>
-            <input id="date" type="date" />
+            <input id="date" type="date" x-model="date" required />
           </div>
-          <div style="grid-column: 1 / -1;">
+          <div>
             <label for="inspector">Printed Name of Inspector</label>
-            <input id="inspector" type="text" placeholder="e.g., Rick Garrick" />
+            <input id="inspector" type="text" placeholder="e.g., Baden Powell" x-model="inspector" required />
           </div>
         </div>
-      </div>
+      </section>
 
+      <section class="card stack">
       <table>
         <thead>
           <tr>
-            <th class="what">What Inspected</th>
-            <th class="colA center">Total members<br><span class="muted">(A)</span></th>
-            <th class="colB center">Members that have item<br><span class="muted">(B)</span></th>
-            <th class="colC center">Points Allowed<br><span class="muted">(C)</span></th>
-            <th class="colPts center">Points<br><span class="muted">(B/A) × C</span></th>
+            <th>Item</th>
+            <th>Type</th>
+            <th>Count / Result</th>
+            <th>Points</th>
           </tr>
         </thead>
-        <tbody id="rows"></tbody>
+        <template x-for="section in sections" :key="section.title">
+          <tbody>
+            <tr><th colspan="4" x-text="section.title"></th></tr>
+            <template x-for="item in section.items" :key="item.key">
+              <tr>
+                <td x-text="item.label"></td>
+                <td x-text="item.type === 'per' ? 'Per Youth' : 'Pass/Fail'"></td>
+                <td>
+                  <template x-if="item.type === 'per'">
+                    <input type="number" min="0" :max="present || 0" step="1" inputmode="numeric" x-model.number="item.value" />
+                  </template>
+                  <template x-if="item.type === 'pass'">
+                    <select x-model="item.value">
+                      <option value="no">No</option>
+                      <option value="yes">Yes</option>
+                    </select>
+                  </template>
+                </td>
+                <td x-text="`${format(pointsFor(item))} / ${format(item.points)}`"></td>
+              </tr>
+            </template>
+          </tbody>
+        </template>
       </table>
+      </section>
 
-      <div class="scorebox">
-        <div class="total">
-          <span>Total Score</span>
-          <span><span id="totalScore">0.00</span> / 100</span>
-        </div>
-      </div>
+      <section class="card row">
+        <strong>Total Score</strong>
+        <span><span x-text="format(total)"></span> / <span x-text="format(maxPoints)"></span></span>
+      </section>
 
-      <div class="footnote">
-        Tip: Set <b>(A)</b> once, then fill <b>(B)</b>. (C) is editable if you want to match your exact scoring.
-      </div>
-    </div>
-  </div>
+      <p class="muted">Per youth items score based on the percentage of members present who have the item.</p>
+    </form>
+  </main>
 
 <script>
-(() => {
-  const ITEMS = [
-    { label: "Scout Handbook (show it)", C: 20, type: "ratio" },
-
-    { label: "Totin' Chip", C: 2.5, type: "ratio" },
-    { label: "Fire'n Chit", C: 2.5, type: "ratio" },
-    { label: "Head Gear", C: 5, type: "ratio" },
-    { label: "Official Scout Hat/Beanie", C: 5, type: "ratio" },
-
-    { section: "Clothing", note: "" },
-    { label: "Shirt", C: 5, type: "ratio" },
-    { label: "Neckwear", C: 5, type: "ratio" },
-    { label: "Pants/Shorts", C: 10, type: "ratio" },
-    { label: "Belt", C: 5, type: "ratio" },
-    { label: "Socks", C: 10, type: "ratio" },
-
-    { label: "Patrol Flag (Yes/No)", C: 5, type: "yesno" },
-
-    { section: "Patches", note: "" },
-    { label: "Right sleeve", C: 2.5, type: "ratio" },
-    { label: "US Flag", C: 7.5, type: "ratio" },
-    { label: "Patrol Emblem", C: 2, type: "ratio" },
-    { label: "Council Emblem", C: 3, type: "ratio" },
-    { label: "Troop Number", C: 5, type: "ratio" },
-    { label: "Rank", C: 5, type: "ratio" },
-    { label: "World Crest", C: 5, type: "ratio" },
-  ];
-
-  const rowsEl = document.getElementById("rows");
-  const totalEl = document.getElementById("totalScore");
-
-  function fmt(n) {
-    if (!isFinite(n)) return "0.00";
-    return (Math.round(n * 100) / 100).toFixed(2);
-  }
-
-  function calcRow(row) {
-    const A = Number(row.querySelector('[data-role="A"]')?.value || 0);
-    const C = Number(row.querySelector('[data-role="C"]')?.value || 0);
-    const type = row.getAttribute("data-type");
-
-    let pts = 0;
-
-    if (type === "yesno") {
-      const yn = row.querySelector('[data-role="YN"]')?.value || "No";
-      pts = (yn === "Yes") ? C : 0;
-      row.querySelector('[data-role="Bwrap"]').textContent = "—";
-    } else {
-      const B = Number(row.querySelector('[data-role="B"]')?.value || 0);
-      pts = (A > 0) ? (B / A) * C : 0;
-    }
-
-    row.querySelector('[data-role="PTS"]').textContent = fmt(pts);
-    return pts;
-  }
-
-  function calcAll() {
-    let total = 0;
-    for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
-      total += calcRow(tr);
-    }
-    totalEl.textContent = fmt(total);
-  }
-
-  function makeSectionRow(title, note) {
-    const tr = document.createElement("tr");
-    tr.className = "section-row";
-    tr.innerHTML = `<td colspan="5">${title} ${note ? `<small>${note}</small>` : ""}</td>`;
-    return tr;
-  }
-
-  function makeItemRow(item) {
-    const tr = document.createElement("tr");
-    tr.setAttribute("data-item", "1");
-    tr.setAttribute("data-type", item.type);
-
-    const commonA = `
-      <td class="cell-num center">
-        <input data-role="A" type="number" min="0" step="1" inputmode="numeric" />
-      </td>
-    `;
-
-    const commonC = `
-      <td class="cell-num center">
-        <input data-role="C" type="number" min="0" step="0.5" inputmode="decimal" value="${item.C}" />
-      </td>
-    `;
-
-    let Bcell = "";
-    if (item.type === "yesno") {
-      Bcell = `<td class="cell-num center" data-role="Bwrap">
-        <select data-role="YN">
-          <option>No</option>
-          <option>Yes</option>
-        </select>
-      </td>`;
-    } else {
-      Bcell = `<td class="cell-num center" data-role="Bwrap">
-        <input data-role="B" type="number" min="0" step="1" inputmode="numeric" />
-      </td>`;
-    }
-
-    tr.innerHTML = `
-      <td>${item.label}</td>
-      ${commonA}
-      ${Bcell}
-      ${commonC}
-      <td class="center" data-role="PTS">0.00</td>
-    `;
-
-    tr.addEventListener("input", calcAll);
-    tr.addEventListener("change", calcAll);
-    return tr;
-  }
-
-  for (const it of ITEMS) {
-    if (it.section) {
-      rowsEl.appendChild(makeSectionRow(it.section, it.note || ""));
-    } else {
-      rowsEl.appendChild(makeItemRow(it));
-    }
-  }
-
-  rowsEl.addEventListener("input", (e) => {
-    const target = e.target;
-    if (target?.dataset?.role === "A") {
-      const v = target.value;
-      for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
-        const A = tr.querySelector('[data-role="A"]');
-        if (A && A.value === "") A.value = v;
+function inspectionSheet() {
+  return {
+    patrolName: "",
+    present: 0,
+    date: "",
+    inspector: "",
+    sections: [
+      {
+        title: "Uniform Basics",
+        items: [
+          { key: "class-a", label: "Class A Shirt", type: "per", points: 10, value: 0 },
+          { key: "neckerchief", label: "Neckerchief", type: "per", points: 5, value: 0 },
+          { key: "pants", label: "BSA Pants/Shorts", type: "per", points: 10, value: 0 },
+          { key: "belt", label: "BSA Belt", type: "per", points: 5, value: 0 },
+          { key: "socks", label: "BSA Socks", type: "per", points: 10, value: 0 },
+          { key: "epaulets", label: "Shoulder Epaulets", type: "per", points: 5, value: 0 },
+          { key: "flag", label: "Patrol Flag", type: "pass", points: 15, value: "no" },
+        ],
+      },
+      {
+        title: "Right Sleeve",
+        items: [
+          { key: "us-flag", label: "US Flag", type: "per", points: 5, value: 0 },
+          { key: "patrol-emblem", label: "Patrol Emblem", type: "per", points: 5, value: 0 },
+        ],
+      },
+      {
+        title: "Left Sleeve",
+        items: [
+          { key: "csp", label: "Council Emblem (CSP)", type: "per", points: 5, value: 0 },
+          { key: "troop-number", label: "Troop Number", type: "per", points: 5, value: 0 },
+        ],
+      },
+      {
+        title: "Left Pocket",
+        items: [
+          { key: "rank", label: "Current Rank", type: "per", points: 10, value: 0 },
+          { key: "crest", label: "Scouting World Crest", type: "per", points: 10, value: 0 },
+        ],
+      },
+    ],
+    init() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      this.date = `${yyyy}-${mm}-${dd}`;
+    },
+    pointsFor(item) {
+      if (item.type === "pass") {
+        return item.value === "yes" ? item.points : 0;
       }
-      calcAll();
-    }
-  });
+      if (!this.present || this.present <= 0) return 0;
+      const count = Math.max(0, Math.min(this.present, Number(item.value) || 0));
+      return (count / this.present) * item.points;
+    },
+    get maxPoints() {
+      return this.sections.flatMap((s) => s.items).reduce((sum, item) => sum + item.points, 0);
+    },
+    get total() {
+      return this.sections.flatMap((s) => s.items).reduce((sum, item) => sum + this.pointsFor(item), 0);
+    },
+    format(value) {
+      return (Math.round(value * 100) / 100).toFixed(2);
+    },
+  };
+}
 
-  document.getElementById("btnPrint").addEventListener("click", () => window.print());
+document.getElementById("btnPrint").addEventListener("click", () => {
+  const form = document.getElementById("inspectionForm");
+  if (form && !form.reportValidity()) return;
+  window.print();
+});
 
-  document.getElementById("btnReset").addEventListener("click", () => {
-    if (!confirm("Clear all fields?")) return;
-    document.getElementById("patrolName").value = "";
-    document.getElementById("date").value = "";
-    document.getElementById("inspector").value = "";
-    for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
-      const A = tr.querySelector('[data-role="A"]'); if (A) A.value = "";
-      const B = tr.querySelector('[data-role="B"]'); if (B) B.value = "";
-      const YN = tr.querySelector('[data-role="YN"]'); if (YN) YN.value = "No";
-      tr.querySelector('[data-role="PTS"]').textContent = "0.00";
-    }
-    calcAll();
-  });
+document.getElementById("btnStart").addEventListener("click", () => {
+  const form = document.getElementById("inspectionForm");
+  if (form) form.reportValidity();
+});
 
-  calcAll();
-})();
+document.getElementById("btnReset").addEventListener("click", () => {
+  if (!confirm("Clear all fields?")) return;
+  const root = document.querySelector("[x-data]");
+  if (root && root.__x && root.__x.$data) {
+    const data = root.__x.$data;
+    data.patrolName = "";
+    data.present = 0;
+    data.inspector = "";
+    data.sections.forEach((section) => {
+      section.items.forEach((item) => {
+        item.value = item.type === "pass" ? "no" : 0;
+      });
+    });
+  }
+});
 </script>
 <script>
   if ("serviceWorker" in navigator) {

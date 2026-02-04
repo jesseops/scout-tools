@@ -366,12 +366,21 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+caption {
+  text-align: left;
+  font-weight: 600;
+  margin-bottom: 8px;
 }
 
 th,
 td {
   border: 1px solid var(--border);
-  padding: 8px;
+  padding: 6px 8px;
   vertical-align: middle;
 }
 
@@ -379,9 +388,26 @@ th {
   background: var(--surface-muted);
   font-size: 0.78rem;
   text-align: left;
+  font-weight: 700;
 }
 
 td {
+  font-size: 0.85rem;
+}
+
+tbody tr:nth-child(even) {
+  background: color-mix(in srgb, var(--surface) 94%, var(--surface-muted));
+}
+
+td:first-child,
+th[scope="row"] {
+  font-weight: 600;
+}
+
+table input,
+table select {
+  width: 100%;
+  padding: 6px 8px;
   font-size: 0.85rem;
 }
 
