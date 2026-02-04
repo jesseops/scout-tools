@@ -1,0 +1,6 @@
+:root[data-org="pack"] {
+  --accent: #0067b8;
+  --accent-contrast: #ffffff;
+  --header-bg: #e8f2fb;
+  --header-border: #c7def3;
+}

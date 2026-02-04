@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Uniform Inspection Checklist</title>
+
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="../../assets/js/theme.js" defer></script>
+
+  <style>
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 16px auto;
+      padding: 0 16px 24px;
+    }
+
+    .paper {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--header-border);
+      border-radius: 12px;
+      padding: 18px 18px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 12px;
+    }
+
+    .title { font-weight: 800; font-size: 18px; margin: 0; }
+    .sub { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .center { text-align: center; }
+    .section-row td { background: var(--accent); color: var(--accent-contrast); font-weight: 700; }
+    .section-row td small { color: rgba(255, 255, 255, 0.8); font-weight: 600; }
+
+    .scorebox {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .scorebox .total {
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-width: 180px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 800;
+      background: var(--surface-muted);
+    }
+
+    .footnote { margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+    .cell-num input,
+    .cell-num select { padding: 6px 8px; border-radius: 6px; font-size: 13px; }
+    .what { width: 42%; }
+    .colA, .colB, .colC, .colPts { width: 14.5%; }
+
+    @media print {
+      body { background: #fff; }
+      .page { margin: 0; padding: 0; }
+      .paper { box-shadow: none; border: none; border-radius: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="header no-print">
+    <div class="toolbar container">
+      <div class="row">
+        <a class="button" href="../../">Back to tools</a>
+        <button class="primary" id="btnPrint">Print</button>
+        <button id="btnReset">Reset</button>
+      </div>
+      <div class="muted">Scoring: Points = (B/A) × C</div>
+    </div>
+  </header>
+
+  <div class="page">
+    <div class="paper" id="scoreSheet">
+      <div class="header-grid">
+        <div>
+          <p class="title">Uniform Inspection Checklist</p>
+          <p class="sub">Complete all fields before turning in.</p>
+        </div>
+
+        <div class="meta">
+          <div>
+            <label for="patrolName">Patrol Name</label>
+            <input id="patrolName" type="text" placeholder="e.g., VIKINGS" />
+          </div>
+          <div>
+            <label for="date">Date</label>
+            <input id="date" type="date" />
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <label for="inspector">Printed Name of Inspector</label>
+            <input id="inspector" type="text" placeholder="e.g., Rick Garrick" />
+          </div>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th class="what">What Inspected</th>
+            <th class="colA center">Total members<br><span class="muted">(A)</span></th>
+            <th class="colB center">Members that have item<br><span class="muted">(B)</span></th>
+            <th class="colC center">Points Allowed<br><span class="muted">(C)</span></th>
+            <th class="colPts center">Points<br><span class="muted">(B/A) × C</span></th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+
+      <div class="scorebox">
+        <div class="total">
+          <span>Total Score</span>
+          <span><span id="totalScore">0.00</span> / 100</span>
+        </div>
+      </div>
+
+      <div class="footnote">
+        Tip: Set <b>(A)</b> once, then fill <b>(B)</b>. (C) is editable if you want to match your exact scoring.
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const ITEMS = [
+    { label: "Scout Handbook (show it)", C: 20, type: "ratio" },
+
+    { label: "Totin' Chip", C: 2.5, type: "ratio" },
+    { label: "Fire'n Chit", C: 2.5, type: "ratio" },
+    { label: "Head Gear", C: 5, type: "ratio" },
+    { label: "Official Scout Hat/Beanie", C: 5, type: "ratio" },
+
+    { section: "Clothing", note: "" },
+    { label: "Shirt", C: 5, type: "ratio" },
+    { label: "Neckwear", C: 5, type: "ratio" },
+    { label: "Pants/Shorts", C: 10, type: "ratio" },
+    { label: "Belt", C: 5, type: "ratio" },
+    { label: "Socks", C: 10, type: "ratio" },
+
+    { label: "Patrol Flag (Yes/No)", C: 5, type: "yesno" },
+
+    { section: "Patches", note: "" },
+    { label: "Right sleeve", C: 2.5, type: "ratio" },
+    { label: "US Flag", C: 7.5, type: "ratio" },
+    { label: "Patrol Emblem", C: 2, type: "ratio" },
+    { label: "Council Emblem", C: 3, type: "ratio" },
+    { label: "Troop Number", C: 5, type: "ratio" },
+    { label: "Rank", C: 5, type: "ratio" },
+    { label: "World Crest", C: 5, type: "ratio" },
+  ];
+
+  const rowsEl = document.getElementById("rows");
+  const totalEl = document.getElementById("totalScore");
+
+  function fmt(n) {
+    if (!isFinite(n)) return "0.00";
+    return (Math.round(n * 100) / 100).toFixed(2);
+  }
+
+  function calcRow(row) {
+    const A = Number(row.querySelector('[data-role="A"]')?.value || 0);
+    const C = Number(row.querySelector('[data-role="C"]')?.value || 0);
+    const type = row.getAttribute("data-type");
+
+    let pts = 0;
+
+    if (type === "yesno") {
+      const yn = row.querySelector('[data-role="YN"]')?.value || "No";
+      pts = (yn === "Yes") ? C : 0;
+      row.querySelector('[data-role="Bwrap"]').textContent = "—";
+    } else {
+      const B = Number(row.querySelector('[data-role="B"]')?.value || 0);
+      pts = (A > 0) ? (B / A) * C : 0;
+    }
+
+    row.querySelector('[data-role="PTS"]').textContent = fmt(pts);
+    return pts;
+  }
+
+  function calcAll() {
+    let total = 0;
+    for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
+      total += calcRow(tr);
+    }
+    totalEl.textContent = fmt(total);
+  }
+
+  function makeSectionRow(title, note) {
+    const tr = document.createElement("tr");
+    tr.className = "section-row";
+    tr.innerHTML = `<td colspan="5">${title} ${note ? `<small>${note}</small>` : ""}</td>`;
+    return tr;
+  }
+
+  function makeItemRow(item) {
+    const tr = document.createElement("tr");
+    tr.setAttribute("data-item", "1");
+    tr.setAttribute("data-type", item.type);
+
+    const commonA = `
+      <td class="cell-num center">
+        <input data-role="A" type="number" min="0" step="1" inputmode="numeric" />
+      </td>
+    `;
+
+    const commonC = `
+      <td class="cell-num center">
+        <input data-role="C" type="number" min="0" step="0.5" inputmode="decimal" value="${item.C}" />
+      </td>
+    `;
+
+    let Bcell = "";
+    if (item.type === "yesno") {
+      Bcell = `<td class="cell-num center" data-role="Bwrap">
+        <select data-role="YN">
+          <option>No</option>
+          <option>Yes</option>
+        </select>
+      </td>`;
+    } else {
+      Bcell = `<td class="cell-num center" data-role="Bwrap">
+        <input data-role="B" type="number" min="0" step="1" inputmode="numeric" />
+      </td>`;
+    }
+
+    tr.innerHTML = `
+      <td>${item.label}</td>
+      ${commonA}
+      ${Bcell}
+      ${commonC}
+      <td class="center" data-role="PTS">0.00</td>
+    `;
+
+    tr.addEventListener("input", calcAll);
+    tr.addEventListener("change", calcAll);
+    return tr;
+  }
+
+  for (const it of ITEMS) {
+    if (it.section) {
+      rowsEl.appendChild(makeSectionRow(it.section, it.note || ""));
+    } else {
+      rowsEl.appendChild(makeItemRow(it));
+    }
+  }
+
+  rowsEl.addEventListener("input", (e) => {
+    const target = e.target;
+    if (target?.dataset?.role === "A") {
+      const v = target.value;
+      for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
+        const A = tr.querySelector('[data-role="A"]');
+        if (A && A.value === "") A.value = v;
+      }
+      calcAll();
+    }
+  });
+
+  document.getElementById("btnPrint").addEventListener("click", () => window.print());
+
+  document.getElementById("btnReset").addEventListener("click", () => {
+    if (!confirm("Clear all fields?")) return;
+    document.getElementById("patrolName").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("inspector").value = "";
+    for (const tr of rowsEl.querySelectorAll("tr[data-item='1']")) {
+      const A = tr.querySelector('[data-role="A"]'); if (A) A.value = "";
+      const B = tr.querySelector('[data-role="B"]'); if (B) B.value = "";
+      const YN = tr.querySelector('[data-role="YN"]'); if (YN) YN.value = "No";
+      tr.querySelector('[data-role="PTS"]').textContent = "0.00";
+    }
+    calcAll();
+  });
+
+  calcAll();
+})();
+</script>
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("../../sw.js");
+  }
+</script>
+</body>
+</html>
