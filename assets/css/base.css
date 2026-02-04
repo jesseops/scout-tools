@@ -183,6 +183,12 @@ label {
   margin-bottom: 6px;
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 /* Form controls */
 input[type="text"],
 input[type="date"],

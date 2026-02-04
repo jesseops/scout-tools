@@ -237,19 +237,19 @@
       </div>
       <div class="row">
         <div class="theme-controls" aria-label="Theme settings">
-          <div class="theme-control">
-            <label for="orgSelect">Organization</label>
-            <select id="orgSelect" data-theme-control="org">
-              <option value="pack">Cub Scouts Pack</option>
-              <option value="troop">Scouting America Troop</option>
-            </select>
-          </div>
-          <div class="theme-control">
-            <label for="modeSelect">Mode</label>
-            <select id="modeSelect" data-theme-control="mode">
-              <option value="system">System</option>
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
+        <div class="theme-control field">
+          <label for="orgSelect">Organization</label>
+          <select id="orgSelect" data-theme-control="org">
+            <option value="pack">Cub Scouts Pack</option>
+            <option value="troop">Scouting America Troop</option>
+          </select>
+        </div>
+        <div class="theme-control field">
+          <label for="modeSelect">Mode</label>
+          <select id="modeSelect" data-theme-control="mode">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
             </select>
           </div>
         </div>
@@ -267,11 +267,11 @@
         </div>
         <div class="stack">
           <div class="file-row">
-            <label>
+            <label class="field">
               Header logo (optional)
               <input type="file" accept="image/*" @change="onLogoChange" />
             </label>
-            <label>
+            <label class="field">
               Watermark (optional)
               <input type="file" accept="image/*" @change="onWatermarkChange" />
             </label>
