@@ -24,7 +24,7 @@ This repo contains **Scout Tools**: a static collection of small utility pages f
 
 ## Repo Structure
 
-Recommended layout:
+Current layout highlights:
 
 - `index.html` — landing page
 - `tools/<tool-name>/index.html` — each tool is a folder with its own page
@@ -36,6 +36,9 @@ Recommended layout:
 - `assets/js/alpine.min.js` — vendored dependency (preferred for offline)
 - `sw.js` + `offline.html` — offline caching support
 - `manifest.webmanifest` — installable metadata (optional but recommended)
+- `gss_pdf_generator.py` — builds `assets/docs/guide-to-safe-scouting.pdf` from official GSS pages
+- `.github/workflows/update-gss-pdf.yml` — scheduled/manual workflow that regenerates and commits the PDF to `main`
+- `requirements.txt` — Python dependencies for the PDF generator workflow
 
 ---
 
@@ -130,6 +133,8 @@ Current tools:
 - `tools/uniform-inspection-checklist/index.html`
 - `tools/activity-timer/index.html`
 - `tools/markdown-to-pdf/index.html`
+- `tools/ready-resources/index.html`
+- `tools/guide-to-safe-scouting/index.html`
 
 Template snippet for a tool page:
 
@@ -138,7 +143,16 @@ Template snippet for a tool page:
 <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
 <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
 <script src="../../assets/js/theme.js" defer></script>
-````
+```
+
+## Guide to Safe Scouting PDF Automation
+
+- Output path is `assets/docs/guide-to-safe-scouting.pdf`.
+- The GSS tool page references that exact path and expects it to be present for offline use.
+- If you change output path or filename, update:
+  - `tools/guide-to-safe-scouting/index.html`
+  - `sw.js` pre-cache URLs
+  - `.github/workflows/update-gss-pdf.yml`
 
 ---
 
@@ -178,5 +192,3 @@ Template snippet for a tool page:
 * Add an icon set and a PWA install prompt.
 * Add IndexedDB wrapper for larger rosters/checklists.
 * Add print styles for roster/duty sheets.
-
-```
