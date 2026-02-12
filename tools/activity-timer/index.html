@@ -6,133 +6,53 @@
   <title>Activity Timer</title>
 
   <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-activity-timer.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-markdown-to-pdf.css" />
   <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
   <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
-  <script src="../../assets/js/theme.js" defer></script>
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/alpine.min.js" defer></script>
+  <script src="../../assets/js/marked.min.js"></script>
+  <script src="../../assets/js/tool-uniform-inspection-checklist.js"></script>
+  <script src="../../assets/js/tool-markdown-to-pdf.js"></script>
+  <script src="../../assets/js/layout.js"></script>
 
-  <style>
-    .timer-card {
-      text-align: center;
-      padding: 24px;
-    }
-
-    .timer-ring {
-      position: relative;
-      width: clamp(220px, 45vw, 360px);
-      aspect-ratio: 1 / 1;
-      margin: 12px auto 8px;
-      display: grid;
-      place-items: center;
-    }
-
-    .timer-ring svg {
-      width: 100%;
-      height: 100%;
-      transform: rotate(-90deg);
-    }
-
-    .ring-bg {
-      fill: none;
-      stroke: var(--surface-muted);
-      stroke-width: 8;
-    }
-
-    .ring-progress {
-      fill: none;
-      stroke: var(--accent);
-      stroke-width: 8;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.2s ease;
-    }
-
-    .ring-progress.low {
-      stroke: var(--accent-secondary);
-    }
-
-    .ring-center {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      padding: 24px;
-    }
-
-    .timer-display {
-      font-size: clamp(44px, 7vw, 88px);
-      font-weight: 800;
-      letter-spacing: 2px;
-    }
-
-    .timer-status {
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--muted);
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      justify-content: center;
-      margin-top: 16px;
-      align-items: flex-end;
-    }
-
-    .preset-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 12px;
-    }
-
-    .timer-input {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-width: 140px;
-      margin-bottom: 0;
-      align-self: flex-end;
-    }
-
-    .button-row {
-      display: contents;
-    }
-  </style>
 </head>
-<body>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
   <header class="header no-print">
     <div class="header-inner container">
-      <div>
-        <strong>Activity Timer</strong>
-        <div class="muted">Big, simple timer for den & pack activities.</div>
+      <div class="header-brand">
+        <strong data-layout-title>Activity Timer</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Big, simple timer for den and pack activities.</p>
       </div>
-      <div class="row">
-        <div class="theme-controls" aria-label="Theme settings">
-        <div class="theme-control field">
-          <label for="orgSelect">Organization</label>
-          <select id="orgSelect" data-theme-control="org">
-            <option value="pack">Cub Scouts Pack</option>
-            <option value="troop">Scouting America Troop</option>
-          </select>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
         </div>
-        <div class="theme-control field">
-          <label for="modeSelect">Mode</label>
-          <select id="modeSelect" data-theme-control="mode">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </div>
-        </div>
-        <a class="button" href="../../">Back to tools</a>
       </div>
     </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
   </header>
 
-  <main class="container stack" style="padding: 24px 16px 40px;">
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" data-page-title="Activity Timer" data-page-subtitle="Big, simple timer for den and pack activities." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Activity Timer","href":"./"}]'>
     <section class="card timer-card">
       <div class="timer-ring">
         <svg viewBox="0 0 120 120" aria-hidden="true">
@@ -166,112 +86,116 @@
     <noscript>
       <p class="muted">JavaScript is required for the countdown. You can still use this page as a quick reference for time blocks.</p>
     </noscript>
+
+    <script>
+      (() => {
+        const display = document.getElementById("display");
+        const status = document.getElementById("status");
+        const minutesInput = document.getElementById("minutesInput");
+        const startBtn = document.getElementById("startBtn");
+        const pauseBtn = document.getElementById("pauseBtn");
+        const resetBtn = document.getElementById("resetBtn");
+        const presetButtons = document.querySelectorAll("#app-main [data-preset]");
+        const ring = document.getElementById("ringProgress");
+
+        if (!display || !status || !minutesInput || !startBtn || !pauseBtn || !resetBtn || !ring) return;
+
+        const ringRadius = 52;
+        const ringCircumference = 2 * Math.PI * ringRadius;
+
+        let timerId = null;
+        let remainingSeconds = Number(minutesInput.value) * 60;
+        let baseSeconds = remainingSeconds;
+
+        const formatTime = (totalSeconds) => {
+          const mins = Math.floor(totalSeconds / 60);
+          const secs = totalSeconds % 60;
+          return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        };
+
+        const updateDisplay = () => {
+          display.textContent = formatTime(remainingSeconds);
+          const ratio = baseSeconds > 0 ? remainingSeconds / baseSeconds : 0;
+          const offset = ringCircumference * (1 - ratio);
+          ring.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
+          ring.style.strokeDashoffset = offset;
+          const lowThreshold = Math.max(5, Math.round(baseSeconds * 0.1));
+          ring.classList.toggle("low", remainingSeconds > 0 && remainingSeconds <= lowThreshold);
+        };
+
+        const setStatus = (text) => {
+          status.textContent = text;
+        };
+
+        const stopTimer = () => {
+          if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+          }
+        };
+
+        const tick = () => {
+          if (remainingSeconds > 0) {
+            remainingSeconds -= 1;
+            updateDisplay();
+            if (remainingSeconds === 0) {
+              setStatus("Time!");
+              stopTimer();
+            }
+          }
+        };
+
+        startBtn.addEventListener("click", () => {
+          if (timerId) return;
+          if (remainingSeconds === 0) {
+            remainingSeconds = baseSeconds;
+          }
+          setStatus("Running");
+          timerId = window.setInterval(tick, 1000);
+        });
+
+        pauseBtn.addEventListener("click", () => {
+          stopTimer();
+          setStatus("Paused");
+        });
+
+        resetBtn.addEventListener("click", () => {
+          stopTimer();
+          remainingSeconds = baseSeconds;
+          updateDisplay();
+          setStatus("Ready");
+        });
+
+        minutesInput.addEventListener("change", () => {
+          const minutes = Math.max(1, Math.min(120, Number(minutesInput.value) || 1));
+          minutesInput.value = minutes;
+          baseSeconds = minutes * 60;
+          remainingSeconds = baseSeconds;
+          updateDisplay();
+          setStatus("Ready");
+        });
+
+        presetButtons.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const minutes = Number(btn.dataset.preset);
+            minutesInput.value = minutes;
+            baseSeconds = minutes * 60;
+            remainingSeconds = baseSeconds;
+            updateDisplay();
+            setStatus("Ready");
+          });
+        });
+
+        ring.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
+        updateDisplay();
+      })();
+    </script>
   </main>
 
-<script>
-(() => {
-  const display = document.getElementById("display");
-  const status = document.getElementById("status");
-  const minutesInput = document.getElementById("minutesInput");
-  const startBtn = document.getElementById("startBtn");
-  const pauseBtn = document.getElementById("pauseBtn");
-  const resetBtn = document.getElementById("resetBtn");
-  const presetButtons = document.querySelectorAll("[data-preset]");
-  const ring = document.getElementById("ringProgress");
-  const ringRadius = 52;
-  const ringCircumference = 2 * Math.PI * ringRadius;
-
-  let timerId = null;
-  let remainingSeconds = Number(minutesInput.value) * 60;
-  let baseSeconds = remainingSeconds;
-
-  const formatTime = (totalSeconds) => {
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  };
-
-  const updateDisplay = () => {
-    display.textContent = formatTime(remainingSeconds);
-    const ratio = baseSeconds > 0 ? remainingSeconds / baseSeconds : 0;
-    const offset = ringCircumference * (1 - ratio);
-    ring.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
-    ring.style.strokeDashoffset = offset;
-    const lowThreshold = Math.max(5, Math.round(baseSeconds * 0.1));
-    ring.classList.toggle("low", remainingSeconds > 0 && remainingSeconds <= lowThreshold);
-  };
-
-  const setStatus = (text) => {
-    status.textContent = text;
-  };
-
-  const stopTimer = () => {
-    if (timerId) {
-      clearInterval(timerId);
-      timerId = null;
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
     }
-  };
-
-  const tick = () => {
-    if (remainingSeconds > 0) {
-      remainingSeconds -= 1;
-      updateDisplay();
-      if (remainingSeconds === 0) {
-        setStatus("Time!");
-        stopTimer();
-      }
-    }
-  };
-
-  startBtn.addEventListener("click", () => {
-    if (timerId) return;
-    if (remainingSeconds === 0) {
-      remainingSeconds = baseSeconds;
-    }
-    setStatus("Running");
-    timerId = window.setInterval(tick, 1000);
-  });
-
-  pauseBtn.addEventListener("click", () => {
-    stopTimer();
-    setStatus("Paused");
-  });
-
-  resetBtn.addEventListener("click", () => {
-    stopTimer();
-    remainingSeconds = baseSeconds;
-    updateDisplay();
-    setStatus("Ready");
-  });
-
-  minutesInput.addEventListener("change", () => {
-    const minutes = Math.max(1, Math.min(120, Number(minutesInput.value) || 1));
-    minutesInput.value = minutes;
-    baseSeconds = minutes * 60;
-    remainingSeconds = baseSeconds;
-    updateDisplay();
-    setStatus("Ready");
-  });
-
-  presetButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const minutes = Number(btn.dataset.preset);
-      minutesInput.value = minutes;
-      baseSeconds = minutes * 60;
-      remainingSeconds = baseSeconds;
-      updateDisplay();
-      setStatus("Ready");
-    });
-  });
-
-  ring.style.strokeDasharray = `${ringCircumference} ${ringCircumference}`;
-  updateDisplay();
-})();
-</script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("../../sw.js");
-  }
-</script>
+  </script>
 </body>
 </html>

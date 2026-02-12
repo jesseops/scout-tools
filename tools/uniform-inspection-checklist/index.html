@@ -6,38 +6,52 @@
   <title>Uniform Inspection Checklist</title>
 
   <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-activity-timer.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-markdown-to-pdf.css" />
   <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
   <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
-  <script src="../../assets/js/theme.js" defer></script>
-  <script defer src="../../assets/js/alpine.min.js"></script>
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/alpine.min.js" defer></script>
+  <script src="../../assets/js/marked.min.js"></script>
+  <script src="../../assets/js/tool-uniform-inspection-checklist.js"></script>
+  <script src="../../assets/js/tool-markdown-to-pdf.js"></script>
+  <script src="../../assets/js/layout.js"></script>
 </head>
-<body>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
   <header class="header no-print">
     <div class="header-inner container">
-      <div class="row">
-        <a class="button" href="../../">Back to tools</a>
+      <div class="header-brand">
+        <strong data-layout-title>Uniform Inspection Checklist</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Complete all fields before turning in.</p>
       </div>
-      <div class="theme-controls" aria-label="Theme settings">
-        <div class="theme-control field">
-          <label for="orgSelect">Organization</label>
-          <select id="orgSelect" data-theme-control="org">
-            <option value="pack">Cub Scouts Pack</option>
-            <option value="troop">Scouting America Troop</option>
-          </select>
-        </div>
-        <div class="theme-control field">
-          <label for="modeSelect">Mode</label>
-          <select id="modeSelect" data-theme-control="mode">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
         </div>
       </div>
     </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
   </header>
 
-  <main class="container stack" style="padding: 24px 16px 40px;" x-data="inspectionSheet()" x-init="init()">
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" x-data="inspectionSheet()" x-init="init()" data-page-title="Uniform Inspection Checklist" data-page-subtitle="Complete all fields before turning in." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Uniform Inspection Checklist","href":"./"}]'>
     <form id="inspectionForm" class="stack">
       <section class="stack">
         <div class="stack">
@@ -71,39 +85,39 @@
       </section>
 
       <section class="card stack">
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Type</th>
-            <th>Count / Result</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-        <template x-for="section in sections" :key="section.title">
-          <tbody>
-            <tr><th colspan="4" x-text="section.title"></th></tr>
-            <template x-for="item in section.items" :key="item.key">
-              <tr>
-                <td x-text="item.label"></td>
-                <td x-text="item.type === 'per' ? 'Per Youth' : 'Pass/Fail'"></td>
-                <td>
-                  <template x-if="item.type === 'per'">
-                    <input type="number" min="0" :max="present || 0" step="1" inputmode="numeric" x-model.number="item.value" />
-                  </template>
-                  <template x-if="item.type === 'pass'">
-                    <select x-model="item.value">
-                      <option value="no">No</option>
-                      <option value="yes">Yes</option>
-                    </select>
-                  </template>
-                </td>
-                <td x-text="`${format(pointsFor(item))} / ${format(item.points)}`"></td>
-              </tr>
-            </template>
-          </tbody>
-        </template>
-      </table>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Type</th>
+              <th>Count / Result</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <template x-for="section in sections" :key="section.title">
+            <tbody>
+              <tr><th colspan="4" x-text="section.title"></th></tr>
+              <template x-for="item in section.items" :key="item.key">
+                <tr>
+                  <td x-text="item.label"></td>
+                  <td x-text="item.type === 'per' ? 'Per Youth' : 'Pass/Fail'"></td>
+                  <td>
+                    <template x-if="item.type === 'per'">
+                      <input type="number" min="0" :max="present || 0" step="1" inputmode="numeric" x-model.number="item.value" />
+                    </template>
+                    <template x-if="item.type === 'pass'">
+                      <select x-model="item.value">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                      </select>
+                    </template>
+                  </td>
+                  <td x-text="`${format(pointsFor(item))} / ${format(item.points)}`"></td>
+                </tr>
+              </template>
+            </tbody>
+          </template>
+        </table>
       </section>
 
       <section class="card row">
@@ -113,108 +127,13 @@
 
       <p class="muted">Per youth items score based on the percentage of members present who have the item.</p>
     </form>
+
   </main>
 
-<script>
-function inspectionSheet() {
-  return {
-    patrolName: "",
-    present: 0,
-    date: "",
-    inspector: "",
-    sections: [
-      {
-        title: "Uniform Basics",
-        items: [
-          { key: "class-a", label: "Class A Shirt", type: "per", points: 10, value: 0 },
-          { key: "neckerchief", label: "Neckerchief", type: "per", points: 5, value: 0 },
-          { key: "pants", label: "BSA Pants/Shorts", type: "per", points: 10, value: 0 },
-          { key: "belt", label: "BSA Belt", type: "per", points: 5, value: 0 },
-          { key: "socks", label: "BSA Socks", type: "per", points: 10, value: 0 },
-          { key: "epaulets", label: "Shoulder Epaulets", type: "per", points: 5, value: 0 },
-          { key: "flag", label: "Patrol Flag", type: "pass", points: 15, value: "no" },
-        ],
-      },
-      {
-        title: "Right Sleeve",
-        items: [
-          { key: "us-flag", label: "US Flag", type: "per", points: 5, value: 0 },
-          { key: "patrol-emblem", label: "Patrol Emblem", type: "per", points: 5, value: 0 },
-        ],
-      },
-      {
-        title: "Left Sleeve",
-        items: [
-          { key: "csp", label: "Council Emblem (CSP)", type: "per", points: 5, value: 0 },
-          { key: "troop-number", label: "Troop Number", type: "per", points: 5, value: 0 },
-        ],
-      },
-      {
-        title: "Left Pocket",
-        items: [
-          { key: "rank", label: "Current Rank", type: "per", points: 10, value: 0 },
-          { key: "crest", label: "Scouting World Crest", type: "per", points: 10, value: 0 },
-        ],
-      },
-    ],
-    init() {
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, "0");
-      const dd = String(today.getDate()).padStart(2, "0");
-      this.date = `${yyyy}-${mm}-${dd}`;
-    },
-    pointsFor(item) {
-      if (item.type === "pass") {
-        return item.value === "yes" ? item.points : 0;
-      }
-      if (!this.present || this.present <= 0) return 0;
-      const count = Math.max(0, Math.min(this.present, Number(item.value) || 0));
-      return (count / this.present) * item.points;
-    },
-    get maxPoints() {
-      return this.sections.flatMap((s) => s.items).reduce((sum, item) => sum + item.points, 0);
-    },
-    get total() {
-      return this.sections.flatMap((s) => s.items).reduce((sum, item) => sum + this.pointsFor(item), 0);
-    },
-    format(value) {
-      return (Math.round(value * 100) / 100).toFixed(2);
-    },
-  };
-}
-
-document.getElementById("btnPrint").addEventListener("click", () => {
-  const form = document.getElementById("inspectionForm");
-  if (form && !form.reportValidity()) return;
-  window.print();
-});
-
-document.getElementById("btnStart").addEventListener("click", () => {
-  const form = document.getElementById("inspectionForm");
-  if (form) form.reportValidity();
-});
-
-document.getElementById("btnReset").addEventListener("click", () => {
-  if (!confirm("Clear all fields?")) return;
-  const root = document.querySelector("[x-data]");
-  if (root && root.__x && root.__x.$data) {
-    const data = root.__x.$data;
-    data.patrolName = "";
-    data.present = 0;
-    data.inspector = "";
-    data.sections.forEach((section) => {
-      section.items.forEach((item) => {
-        item.value = item.type === "pass" ? "no" : 0;
-      });
-    });
-  }
-});
-</script>
-<script>
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("../../sw.js");
-  }
-</script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
+    }
+  </script>
 </body>
 </html>

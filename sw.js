@@ -1,15 +1,21 @@
-const CACHE_NAME = "scout-tools-v5";
+const CACHE_NAME = "scout-tools-v7";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
   "./theme-preview.html",
   "./offline.html",
   "./assets/css/base.css",
+  "./assets/css/tool-activity-timer.css",
+  "./assets/css/tool-markdown-to-pdf.css",
   "./assets/css/theme-pack.css",
   "./assets/css/theme-troop.css",
   "./assets/js/theme.js",
+  "./assets/js/layout.js",
+  "./assets/js/htmx.min.js",
   "./assets/js/alpine.min.js",
   "./assets/js/marked.min.js",
+  "./assets/js/tool-uniform-inspection-checklist.js",
+  "./assets/js/tool-markdown-to-pdf.js",
   "./assets/js/html2pdf.bundle.min.js",
   // Ensure directory indices are handled if GH Pages doesn't auto-resolve them in SW
   "./tools/uniform-inspection-checklist/",

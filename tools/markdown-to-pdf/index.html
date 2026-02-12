@@ -1,264 +1,58 @@
 <!doctype html>
-<html lang="en" data-org="pack" x-data="handoutApp()">
+<html lang="en" data-org="pack">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Markdown to PDF</title>
 
   <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-activity-timer.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-markdown-to-pdf.css" />
   <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
   <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
-  <script src="../../assets/js/theme.js" defer></script>
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/alpine.min.js" defer></script>
+  <script src="../../assets/js/marked.min.js"></script>
+  <script src="../../assets/js/tool-uniform-inspection-checklist.js"></script>
+  <script src="../../assets/js/tool-markdown-to-pdf.js"></script>
+  <script src="../../assets/js/layout.js"></script>
 
-  <script defer src="../../assets/js/marked.min.js"></script>
-  <script defer src="../../assets/js/alpine.min.js"></script>
-  <script defer src="../../assets/js/html2pdf.bundle.min.js"></script>
-
-  <style>
-    :root[data-org="pack"] {
-      --pdf-primary: #003f87;
-      --pdf-accent: #fcd116;
-      --pdf-border: #003f87;
-      --pdf-text: #111827;
-      --pdf-muted: #374151;
-    }
-
-    :root[data-org="troop"] {
-      --pdf-primary: #996633;
-      --pdf-accent: #ce1126;
-      --pdf-border: #996633;
-      --pdf-text: #3e2b20;
-      --pdf-muted: #5d4037;
-    }
-
-    .tool-shell {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 16px 40px;
-    }
-
-    .top-grid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: minmax(240px, 1fr);
-    }
-
-    .editor-grid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: minmax(260px, 1fr);
-      align-items: start;
-    }
-
-    .editor-grid textarea {
-      min-height: 220px;
-      resize: vertical;
-    }
-
-    .panel-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .panel-tag {
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-
-    .file-row {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .preview-panel {
-      display: grid;
-      gap: 16px;
-    }
-
-    .pdf-page {
-      width: 8in;
-      height: 10.5in;
-      margin: 0 auto;
-      background: #ffffff;
-      position: relative;
-      border-radius: 12px;
-      border: 2px solid var(--pdf-border);
-      overflow: hidden;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .pdf-header {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      border-bottom: 1px solid #e5e7eb;
-      background: #f8fafc;
-      padding: 12px 18px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .pdf-header h2 {
-      font-size: 1.05rem;
-      margin: 0;
-      color: var(--pdf-primary);
-      font-weight: 700;
-    }
-
-    .pdf-header p {
-      margin: 2px 0 0;
-      font-size: 0.75rem;
-      color: var(--pdf-muted);
-    }
-
-    .pdf-logo {
-      width: 44px;
-      height: 44px;
-      object-fit: contain;
-    }
-
-    .watermark {
-      position: absolute;
-      inset: 0;
-      margin: auto;
-      max-width: 70%;
-      max-height: 70%;
-      opacity: 0.07;
-      pointer-events: none;
-      z-index: 1;
-      object-fit: contain;
-    }
-
-    .pdf-content {
-      position: relative;
-      z-index: 2;
-      padding: 16px 18px 20px;
-      font-size: 0.86rem;
-      line-height: 1.45;
-      color: var(--pdf-text);
-    }
-
-    .markdown h2 {
-      margin: 0.75rem 0 0.25rem;
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--pdf-primary);
-      border-top: 2px solid var(--pdf-border);
-      padding-top: 6px;
-    }
-
-    .markdown h3 {
-      margin: 0.5rem 0 0.2rem;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--pdf-primary);
-    }
-
-    .markdown p {
-      margin: 0.25rem 0;
-    }
-
-    .markdown ul {
-      padding-left: 18px;
-      margin: 0.25rem 0 0.4rem;
-    }
-
-    .markdown table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 8px;
-      border: 1px solid #d1d5db;
-    }
-
-    .markdown th,
-    .markdown td {
-      border: 1px solid #d1d5db;
-      padding: 6px 8px;
-      font-size: 0.82rem;
-    }
-
-    .markdown th {
-      background: #f3f4f6;
-      text-align: left;
-    }
-
-    .markdown tbody tr:nth-child(even) {
-      background: #f7f7f7;
-    }
-
-    .md-section {
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-
-    @media (min-width: 960px) {
-      .top-grid {
-        grid-template-columns: 1.1fr 1fr;
-      }
-      .editor-grid {
-        grid-template-columns: repeat(3, minmax(220px, 1fr));
-      }
-    }
-
-    @media print {
-      body {
-        background: #fff !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .pdf-page {
-        box-shadow: none;
-        border-radius: 0;
-        border-width: 2px;
-        page-break-after: always;
-      }
-    }
-  </style>
 </head>
-<body>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
   <header class="header no-print">
     <div class="header-inner container">
-      <div>
-        <strong>Markdown to PDF</strong>
-        <div class="muted">Create den meeting plans with clean printable output.</div>
+      <div class="header-brand">
+        <strong data-layout-title>Markdown to PDF</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Create den meeting plans with clean printable output.</p>
       </div>
-      <div class="row">
-        <div class="theme-controls" aria-label="Theme settings">
-        <div class="theme-control field">
-          <label for="orgSelect">Organization</label>
-          <select id="orgSelect" data-theme-control="org">
-            <option value="pack">Cub Scouts Pack</option>
-            <option value="troop">Scouting America Troop</option>
-          </select>
-        </div>
-        <div class="theme-control field">
-          <label for="modeSelect">Mode</label>
-          <select id="modeSelect" data-theme-control="mode">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            </select>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
           </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
         </div>
-        <a class="button" href="../../">Back to tools</a>
       </div>
     </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
   </header>
 
-  <main class="tool-shell stack">
+  <main id="app-main" class="tool-shell stack" x-data="handoutApp()" data-page-title="Markdown to PDF" data-page-subtitle="Create den meeting plans with clean printable output." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Markdown to PDF","href":"./"}]'>
     <section class="card stack">
       <div class="top-grid">
         <div class="stack">
@@ -365,102 +159,9 @@
         </div>
       </div>
     </section>
+
   </main>
 
-  <script>
-    function handoutApp() {
-      return {
-        parentTitle: "Parent Handout",
-        leaderTitle: "Leader Notes",
-        denChiefTitle: "Den Chief Instructions",
-        logoDataUrl: null,
-        watermarkDataUrl: null,
-        parentMarkdown: `## Meeting Focus\n- Overview of tonight's theme\n- Items to bring\n\n## Family Reminders\n- Upcoming events\n- Snacks and allergies`,
-        leaderMarkdown: `## Gathering (5 minutes)\n- Quick welcome activity\n- Review den code\n\n## Main Activity (20 minutes)\n- Key steps\n- Required materials\n\n## Closing (5 minutes)\n- Recap\n- Awards and reminders`,
-        denChiefMarkdown: `## Before the Meeting\n- Help set up stations\n- Greet new Scouts\n\n## During the Meeting\n- Lead the opening\n- Assist with activities\n\n## After the Meeting\n- Help clean up\n- Gather feedback`,
-
-        onLogoChange(event) {
-          const file = event.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.logoDataUrl = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        },
-
-        onWatermarkChange(event) {
-          const file = event.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            this.watermarkDataUrl = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        },
-
-        resetAll() {
-          this.logoDataUrl = null;
-          this.watermarkDataUrl = null;
-          this.parentMarkdown = `## Meeting Focus\n- Overview of tonight's theme\n- Items to bring\n\n## Family Reminders\n- Upcoming events\n- Snacks and allergies`;
-          this.leaderMarkdown = `## Gathering (5 minutes)\n- Quick welcome activity\n- Review den code\n\n## Main Activity (20 minutes)\n- Key steps\n- Required materials\n\n## Closing (5 minutes)\n- Recap\n- Awards and reminders`;
-          this.denChiefMarkdown = `## Before the Meeting\n- Help set up stations\n- Greet new Scouts\n\n## During the Meeting\n- Lead the opening\n- Assist with activities\n\n## After the Meeting\n- Help clean up\n- Gather feedback`;
-        },
-
-        renderSections(md) {
-          if (!window.marked) return "";
-          const raw = window.marked.parse(md || "", { breaks: true });
-          const container = document.createElement("div");
-          container.innerHTML = raw;
-          const nodes = Array.from(container.childNodes);
-          const sectioned = document.createElement("div");
-          let current = null;
-
-          nodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE && node.tagName === "H2") {
-              if (current) sectioned.appendChild(current);
-              current = document.createElement("section");
-              current.className = "md-section";
-              current.appendChild(node);
-            } else {
-              if (!current) {
-                current = document.createElement("section");
-                current.className = "md-section";
-              }
-              current.appendChild(node);
-            }
-          });
-
-          if (current) sectioned.appendChild(current);
-          return sectioned.innerHTML;
-        },
-
-        async downloadPdf() {
-          const element = document.getElementById("print-root");
-          const html = document.documentElement;
-          const originalTheme = html.dataset.theme;
-          const originalMode = html.dataset.themeMode;
-          html.dataset.theme = "light";
-          html.dataset.themeMode = "light";
-
-          const opt = {
-            margin: 0.25,
-            filename: "den-meeting-plan.pdf",
-            image: { type: "jpeg", quality: 0.95 },
-            html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" },
-            jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-            pagebreak: { mode: ["css", "legacy"] },
-          };
-
-          await this.$nextTick();
-          await html2pdf().set(opt).from(element).save();
-
-          html.dataset.theme = originalTheme || "light";
-          html.dataset.themeMode = originalMode || "system";
-        },
-      };
-    }
-  </script>
   <script>
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("../../sw.js");
