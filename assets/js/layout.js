@@ -67,14 +67,17 @@
     const prefs = window.ScoutTheme?.getPrefs ? window.ScoutTheme.getPrefs() : { mode: "system" };
     const active = document.documentElement.dataset.theme || "light";
     const pressed = active === "dark";
-    const modeLabel = prefs.mode === "system" ? "System" : prefs.mode[0].toUpperCase() + prefs.mode.slice(1);
+    const modeLabel = prefs.mode === "system" ? "system" : prefs.mode;
 
     toggle.setAttribute("aria-pressed", String(pressed));
     toggle.dataset.mode = prefs.mode;
+    toggle.title = pressed ? "Switch to light mode" : "Switch to dark mode";
+    toggle.setAttribute("aria-label", `Theme toggle. Current: ${active}. Preference: ${modeLabel}.`);
 
     const label = qs("[data-theme-toggle-label]", toggle);
     if (label) {
-      label.textContent = `${pressed ? "Dark" : "Light"} (${modeLabel})`;
+      label.textContent = pressed ? "🌙" : "☀️";
+      label.setAttribute("aria-hidden", "true");
     }
   };
 

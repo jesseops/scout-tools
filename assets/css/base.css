@@ -370,7 +370,7 @@ button:active,
 
 .breadcrumbs {
   border-top: none;
-  padding: 10px 0 12px;
+  padding: 10px 8px 12px;
   background: var(--bg);
 }
 
@@ -442,10 +442,19 @@ button:active,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 12px;
-  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.theme-toggle [data-theme-toggle-label] {
+  font-size: 16px;
+  line-height: 1;
 }
 
 .theme-toggle[aria-pressed="true"] {
@@ -619,7 +628,7 @@ table select {
   }
 
   .breadcrumbs {
-    padding: 6px 0 8px;
+    padding: 6px 8px 8px;
   }
 }
 
