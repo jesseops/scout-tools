@@ -27,21 +27,21 @@ const setPrefs = (prefs) => {
 
 const getSystemMode = () => (systemQuery.matches ? "dark" : "light");
 
+const getActiveTheme = (prefs) => (prefs.mode === "system" ? getSystemMode() : prefs.mode);
+
 const applyTheme = (prefs) => {
   const html = document.documentElement;
   html.dataset.org = prefs.org;
 
-  if (prefs.mode === "system") {
-    html.dataset.theme = getSystemMode();
-  } else {
-    html.dataset.theme = prefs.mode;
-  }
+  html.dataset.theme = getActiveTheme(prefs);
   html.dataset.themeMode = prefs.mode;
 
   const themeStyles = document.querySelectorAll("[data-theme-css]");
   themeStyles.forEach((link) => {
     link.disabled = link.getAttribute("data-theme-css") !== prefs.org;
   });
+
+  document.dispatchEvent(new CustomEvent("scout:themechange", { detail: { ...prefs } }));
 };
 
 const syncThemeControls = (prefs) => {
@@ -55,6 +55,8 @@ const syncThemeControls = (prefs) => {
 
 const setupThemeControls = () => {
   document.querySelectorAll("[data-theme-control='org']").forEach((select) => {
+    if (select.dataset.themeBound === "true") return;
+    select.dataset.themeBound = "true";
     select.addEventListener("change", (event) => {
       const prefs = { ...getPrefs(), org: event.target.value };
       setPrefs(prefs);
@@ -64,6 +66,8 @@ const setupThemeControls = () => {
   });
 
   document.querySelectorAll("[data-theme-control='mode']").forEach((select) => {
+    if (select.dataset.themeBound === "true") return;
+    select.dataset.themeBound = "true";
     select.addEventListener("change", (event) => {
       const prefs = { ...getPrefs(), mode: event.target.value };
       setPrefs(prefs);
@@ -73,11 +77,28 @@ const setupThemeControls = () => {
   });
 };
 
-document.addEventListener("DOMContentLoaded", () => {
+const initTheme = () => {
   const prefs = getPrefs();
   applyTheme(prefs);
   syncThemeControls(prefs);
   setupThemeControls();
+};
+
+window.ScoutTheme = {
+  THEME_KEY,
+  defaultPrefs,
+  getPrefs,
+  setPrefs,
+  getSystemMode,
+  getActiveTheme,
+  applyTheme,
+  syncThemeControls,
+  setupThemeControls,
+  initTheme,
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+  initTheme();
   systemQuery.addEventListener("change", () => {
     const latest = getPrefs();
     if (latest.mode === "system") {

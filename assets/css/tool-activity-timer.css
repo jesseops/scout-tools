@@ -1,0 +1,89 @@
+.timer-card {
+  text-align: center;
+  padding: 24px;
+}
+
+.timer-ring {
+  position: relative;
+  width: clamp(220px, 45vw, 360px);
+  aspect-ratio: 1 / 1;
+  margin: 12px auto 8px;
+  display: grid;
+  place-items: center;
+}
+
+.timer-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: var(--surface-muted);
+  stroke-width: 8;
+}
+
+.ring-progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s ease;
+}
+
+.ring-progress.low {
+  stroke: var(--accent-secondary);
+}
+
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.timer-display {
+  font-size: clamp(44px, 7vw, 88px);
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.timer-status {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+  align-items: flex-end;
+}
+
+.preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.timer-input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 140px;
+  margin-bottom: 0;
+  align-self: flex-end;
+}
+
+.button-row {
+  display: contents;
+}

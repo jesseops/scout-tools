@@ -1,0 +1,214 @@
+:root[data-org="pack"] {
+  --pdf-primary: #003f87;
+  --pdf-accent: #fcd116;
+  --pdf-border: #003f87;
+  --pdf-text: #111827;
+  --pdf-muted: #374151;
+}
+
+:root[data-org="troop"] {
+  --pdf-primary: #996633;
+  --pdf-accent: #ce1126;
+  --pdf-border: #996633;
+  --pdf-text: #3e2b20;
+  --pdf-muted: #5d4037;
+}
+
+.tool-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.top-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(240px, 1fr);
+}
+
+.editor-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(260px, 1fr);
+  align-items: start;
+}
+
+.editor-grid textarea {
+  min-height: 220px;
+  resize: vertical;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.panel-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.file-row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.preview-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.pdf-page {
+  width: 8in;
+  height: 10.5in;
+  margin: 0 auto;
+  background: #ffffff;
+  position: relative;
+  border-radius: 12px;
+  border: 2px solid var(--pdf-border);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.pdf-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  padding: 12px 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.pdf-header h2 {
+  font-size: 1.05rem;
+  margin: 0;
+  color: var(--pdf-primary);
+  font-weight: 700;
+}
+
+.pdf-header p {
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: var(--pdf-muted);
+}
+
+.pdf-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.watermark {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: 70%;
+  max-height: 70%;
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 1;
+  object-fit: contain;
+}
+
+.pdf-content {
+  position: relative;
+  z-index: 2;
+  padding: 16px 18px 20px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+  color: var(--pdf-text);
+}
+
+.markdown h2 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--pdf-primary);
+  border-top: 2px solid var(--pdf-border);
+  padding-top: 6px;
+}
+
+.markdown h3 {
+  margin: 0.5rem 0 0.2rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--pdf-primary);
+}
+
+.markdown p {
+  margin: 0.25rem 0;
+}
+
+.markdown ul {
+  padding-left: 18px;
+  margin: 0.25rem 0 0.4rem;
+}
+
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+  border: 1px solid #d1d5db;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid #d1d5db;
+  padding: 6px 8px;
+  font-size: 0.82rem;
+}
+
+.markdown th {
+  background: #f3f4f6;
+  text-align: left;
+}
+
+.markdown tbody tr:nth-child(even) {
+  background: #f7f7f7;
+}
+
+.md-section {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media (min-width: 960px) {
+  .top-grid {
+    grid-template-columns: 1.1fr 1fr;
+  }
+
+  .editor-grid {
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+  }
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .pdf-page {
+    box-shadow: none;
+    border-radius: 0;
+    border-width: 2px;
+    page-break-after: always;
+  }
+}

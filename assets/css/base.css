@@ -282,20 +282,128 @@ button:active,
 
 /* Header + hero */
 .header {
+  position: relative;
+}
+
+.header-inner {
   position: sticky;
   top: 0;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 16px;
   background: var(--header-bg);
   border-bottom: 1px solid var(--header-border);
   color: var(--header-text);
   backdrop-filter: saturate(120%) blur(6px);
 }
 
-.header-inner {
+.header-brand {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.header-brand strong {
+  font-size: 1.05rem;
+}
+
+.header-title-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 16px;
+  gap: 12px;
+}
+
+.header-toggle {
+  display: none;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--header-border);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+}
+
+.header-toggle-icon {
+  width: 20px;
+  height: 2px;
+  background: currentColor;
+  position: relative;
+}
+
+.header-toggle-icon::before,
+.header-toggle-icon::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  left: 0;
+  background: currentColor;
+}
+
+.header-toggle-icon::before {
+  top: -6px;
+}
+
+.header-toggle-icon::after {
+  top: 6px;
+}
+
+.header-panel {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.header-panel.is-collapsed {
+  display: none;
+}
+
+.breadcrumbs {
+  border-top: none;
+  padding: 10px 0 12px;
+  background: var(--bg);
+}
+
+.breadcrumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.82rem;
+  color: color-mix(in srgb, var(--muted) 82%, var(--header-text));
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
+  margin-right: 2px;
+}
+
+.breadcrumb-item a {
+  color: color-mix(in srgb, var(--muted) 86%, var(--header-text));
+}
+
+.breadcrumb-item [aria-current="page"] {
+  color: color-mix(in srgb, var(--muted) 92%, var(--header-text));
 }
 
 .hero {
@@ -328,6 +436,33 @@ button:active,
   text-transform: uppercase;
   margin-bottom: 0;
   color: var(--muted);
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  font-weight: 600;
+}
+
+.theme-toggle[aria-pressed="true"] {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Cards + tiles */
@@ -426,6 +561,65 @@ table select {
 @media print {
   .no-print {
     display: none !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .header-inner {
+    align-items: center;
+    flex-wrap: wrap;
+    min-height: 44px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .header-title-subtitle {
+    display: none;
+  }
+
+  .header-brand strong {
+    font-size: 0.98rem;
+    line-height: 1.1;
+  }
+
+  .header-actions {
+    width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
+    position: relative;
+    gap: 8px;
+  }
+
+  .header-toggle {
+    display: inline-flex;
+  }
+
+  .header-panel {
+    width: min(320px, calc(100vw - 32px));
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px;
+    border: 1px solid var(--header-border);
+    border-radius: var(--radius-sm);
+    background: var(--header-bg);
+    box-shadow: var(--shadow-sm);
+    z-index: 20;
+  }
+
+  .theme-controls {
+    width: 100%;
+  }
+
+  .theme-control {
+    min-width: 0;
+  }
+
+  .breadcrumbs {
+    padding: 6px 0 8px;
   }
 }
 
