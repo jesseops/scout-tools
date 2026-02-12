@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Guide to Safe Scouting</title>
+
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-activity-timer.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-markdown-to-pdf.css" />
+  <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/alpine.min.js" defer></script>
+  <script src="../../assets/js/marked.min.js"></script>
+  <script src="../../assets/js/tool-uniform-inspection-checklist.js"></script>
+  <script src="../../assets/js/tool-markdown-to-pdf.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+</head>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
+  <header class="header no-print">
+    <div class="header-inner container">
+      <div class="header-brand">
+        <strong data-layout-title>Guide to Safe Scouting</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Offline-ready access to your local Guide to Safe Scouting PDF copy.</p>
+      </div>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
+  </header>
+
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" data-page-title="Guide to Safe Scouting" data-page-subtitle="Offline-ready access to your local Guide to Safe Scouting PDF copy." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Guide to Safe Scouting","href":"./"}]'>
+    <section class="card stack">
+      <h1>Guide to Safe Scouting</h1>
+      <p class="muted">This page opens a local PDF file first so units can use it without internet access after caching.</p>
+      <div class="row">
+        <a class="button primary" href="../../assets/docs/guide-to-safe-scouting.pdf" target="_blank" rel="noopener">Open local PDF</a>
+        <a class="button" href="https://www.scouting.org/health-and-safety/gss/" target="_blank" rel="noopener">Official online page</a>
+      </div>
+      <p class="muted" id="pdfStatus">Expected local file: <code>assets/docs/guide-to-safe-scouting.pdf</code>.</p>
+    </section>
+
+    <section class="card" style="min-height: 70vh;">
+      <object data="../../assets/docs/guide-to-safe-scouting.pdf" type="application/pdf" width="100%" height="800" aria-label="Guide to Safe Scouting PDF">
+        <div class="stack" style="padding: 12px 0;">
+          <p>The local PDF was not found in this repo yet.</p>
+          <p class="muted">Add <code>guide-to-safe-scouting.pdf</code> to <code>assets/docs/</code> and reload this page.</p>
+          <p><a href="https://www.scouting.org/health-and-safety/gss/" target="_blank" rel="noopener">Open the official online Guide to Safe Scouting</a></p>
+        </div>
+      </object>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const status = document.getElementById("pdfStatus");
+      if (!status) return;
+
+      fetch("../../assets/docs/guide-to-safe-scouting.pdf", { method: "HEAD" })
+        .then((response) => {
+          if (response.ok) {
+            status.textContent = "Local PDF found. Open it now or use the embedded viewer below.";
+          } else {
+            status.textContent = "Local PDF missing. Add assets/docs/guide-to-safe-scouting.pdf for offline use.";
+          }
+        })
+        .catch(() => {
+          status.textContent = "Unable to verify local PDF. If the viewer is blank, add assets/docs/guide-to-safe-scouting.pdf.";
+        });
+    })();
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
+    }
+  </script>
+</body>
+</html>

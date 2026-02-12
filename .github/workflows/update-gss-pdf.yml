@@ -1,0 +1,77 @@
+name: Update Guide to Safe Scouting PDF
+
+on:
+  schedule:
+    - cron: "0 8 1 * *"
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - gss_pdf_generator.py
+      - requirements.txt
+      - .github/workflows/update-gss-pdf.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-gss-pdf
+  cancel-in-progress: true
+
+jobs:
+  generate-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate PDF
+        run: |
+          mkdir -p assets/docs
+          python gss_pdf_generator.py assets/docs/guide-to-safe-scouting.pdf
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet -- assets/docs/guide-to-safe-scouting.pdf; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "✓ PDF unchanged"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "📝 PDF changed"
+          fi
+
+          if [ -f assets/docs/guide-to-safe-scouting.pdf ]; then
+            HASH=$(sha256sum assets/docs/guide-to-safe-scouting.pdf | cut -d' ' -f1)
+            echo "sha256=$HASH" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push to main
+        if: steps.check_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/docs/guide-to-safe-scouting.pdf
+          git commit -m "chore(gss): refresh Guide to Safe Scouting PDF"
+          git push
+
+      - name: Summary
+        run: |
+          echo "## PDF Generation Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Changed: ${{ steps.check_changes.outputs.changed }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- SHA256: \`${{ steps.check_changes.outputs.sha256 }}\`" >> "$GITHUB_STEP_SUMMARY"
+          if [ "${{ steps.check_changes.outputs.changed }}" = "true" ]; then
+            echo "- Published to: main (assets/docs/guide-to-safe-scouting.pdf)" >> "$GITHUB_STEP_SUMMARY"
+          fi

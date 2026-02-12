@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ready Resources</title>
+
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-activity-timer.css" />
+  <link rel="stylesheet" href="../../assets/css/tool-markdown-to-pdf.css" />
+  <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/alpine.min.js" defer></script>
+  <script src="../../assets/js/marked.min.js"></script>
+  <script src="../../assets/js/tool-uniform-inspection-checklist.js"></script>
+  <script src="../../assets/js/tool-markdown-to-pdf.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+</head>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
+  <header class="header no-print">
+    <div class="header-inner container">
+      <div class="header-brand">
+        <strong data-layout-title>Ready Resources</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Songs, skits, ceremonies, and quick references for meetings and campfires.</p>
+      </div>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
+  </header>
+
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" data-page-title="Ready Resources" data-page-subtitle="Songs, skits, ceremonies, and quick references for meetings and campfires." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Ready Resources","href":"./"}]'>
+    <section class="hero stack">
+      <h1>Ready Resources Library</h1>
+      <p class="muted">Keep this page open during planning meetings. It is organized by what leaders usually need on short notice.</p>
+    </section>
+
+    <section class="grid cols-2" aria-label="Resource categories">
+      <article class="card stack">
+        <h2>Songs</h2>
+        <p class="muted">Opening, action, and closing songs with simple prompts.</p>
+        <ul style="padding-left: 18px;">
+          <li><strong>Opening:</strong> "Scout Vespers" and "America the Beautiful"</li>
+          <li><strong>Action:</strong> Repeat-after-me songs and call-and-response chants</li>
+          <li><strong>Closing:</strong> Quiet reflection songs for campfire wrap-up</li>
+        </ul>
+      </article>
+
+      <article class="card stack">
+        <h2>Skits</h2>
+        <p class="muted">Fast skits by group size and prep time.</p>
+        <ul style="padding-left: 18px;">
+          <li><strong>2-4 people:</strong> joke skits and prop skits</li>
+          <li><strong>5-8 people:</strong> audience-participation skits</li>
+          <li><strong>No prep:</strong> one-minute fillers for transitions</li>
+        </ul>
+      </article>
+
+      <article class="card stack">
+        <h2>Ceremonies</h2>
+        <p class="muted">Leader-ready outlines for recurring ceremonies.</p>
+        <ul style="padding-left: 18px;">
+          <li><strong>Flag ceremonies:</strong> opening and retiring scripts</li>
+          <li><strong>Awards:</strong> rank advancement and special recognitions</li>
+          <li><strong>Crossovers:</strong> simple script with role checklist</li>
+        </ul>
+      </article>
+
+      <article class="card stack">
+        <h2>Meeting Fillers</h2>
+        <p class="muted">Quick options when a segment ends early.</p>
+        <ul style="padding-left: 18px;">
+          <li>Gathering game prompts</li>
+          <li>Two-minute challenge ideas</li>
+          <li>Reflection questions for den or patrol circles</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="card stack">
+      <h2>How to Expand This Library</h2>
+      <ol style="padding-left: 18px;">
+        <li>Create subfolders like `songs/`, `skits/`, and `ceremonies/` under `tools/ready-resources/`.</li>
+        <li>Add printable pages and link them from this index.</li>
+        <li>Open each page once while online so service worker caching keeps it available offline.</li>
+      </ol>
+    </section>
+  </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
+    }
+  </script>
+</body>
+</html>

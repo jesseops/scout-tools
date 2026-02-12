@@ -1,4 +1,4 @@
-const CACHE_NAME = "scout-tools-v7";
+const CACHE_NAME = "scout-tools-v9";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -17,6 +17,7 @@ const PRECACHE_URLS = [
   "./assets/js/tool-uniform-inspection-checklist.js",
   "./assets/js/tool-markdown-to-pdf.js",
   "./assets/js/html2pdf.bundle.min.js",
+  "./assets/docs/guide-to-safe-scouting.pdf",
   // Ensure directory indices are handled if GH Pages doesn't auto-resolve them in SW
   "./tools/uniform-inspection-checklist/",
   "./tools/uniform-inspection-checklist/index.html",
@@ -24,12 +25,25 @@ const PRECACHE_URLS = [
   "./tools/activity-timer/index.html",
   "./tools/markdown-to-pdf/",
   "./tools/markdown-to-pdf/index.html",
+  "./tools/ready-resources/",
+  "./tools/ready-resources/index.html",
+  "./tools/guide-to-safe-scouting/",
+  "./tools/guide-to-safe-scouting/index.html",
 ];
 
 // 1. Install: Cache the "Application Shell"
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const url of PRECACHE_URLS) {
+        try {
+          await cache.add(url);
+        } catch (err) {
+          // Keep SW install healthy even if an optional file is unavailable.
+          console.warn("Precache skipped:", url, err);
+        }
+      }
+    })
   );
   self.skipWaiting();
 });
