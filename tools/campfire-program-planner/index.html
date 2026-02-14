@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Campfire Program Planner</title>
+
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+</head>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
+  <header class="header no-print">
+    <div class="header-inner container">
+      <div class="header-brand">
+        <strong data-layout-title>Campfire Program Planner</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Assign patrol slots and track SPL approval for every skit and song.</p>
+      </div>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
+  </header>
+
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" data-page-title="Campfire Program Planner" data-page-subtitle="Assign patrol slots and track SPL approval for every skit and song." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Campfire Program Planner","href":"./"}]'>
+    <section class="hero stack">
+      <h1>Campfire Program Planner</h1>
+      <p class="muted">Build a complete run-of-show that includes patrol assignment, slot order, act type/name, and SPL approval status.</p>
+    </section>
+
+    <section class="card stack">
+      <h2>Add Program Item</h2>
+      <div class="grid cols-2">
+        <div class="field">
+          <label for="slot">Program slot</label>
+          <input id="slot" type="number" min="1" value="1" />
+        </div>
+        <div class="field">
+          <label for="patrol">Assigned patrol</label>
+          <input id="patrol" type="text" placeholder="Raven Patrol" />
+        </div>
+        <div class="field">
+          <label for="type">Type</label>
+          <select id="type">
+            <option value="Skit">Skit</option>
+            <option value="Song">Song</option>
+            <option value="Audience Participation">Audience Participation</option>
+            <option value="Opening/Closing">Opening/Closing</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="name">Item name</label>
+          <input id="name" type="text" placeholder="Invisible Bench" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="notes">Notes (setup, props, cue)</label>
+        <textarea id="notes" rows="3" placeholder="One lantern prop. Call patrol 2 minutes early."></textarea>
+      </div>
+      <div class="field">
+        <label for="approved">SPL approval</label>
+        <select id="approved">
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Revise">Needs Revision</option>
+        </select>
+      </div>
+      <div class="row">
+        <button type="button" class="button primary" id="addItem">Add Item</button>
+        <button type="button" class="button" id="clearProgram">Clear Program</button>
+      </div>
+    </section>
+
+    <section class="card stack">
+      <h2>Program Run Sheet</h2>
+      <div id="programOutput" class="stack"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "scouttools:campfire-program";
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    const fields = {
+      slot: document.getElementById("slot"),
+      patrol: document.getElementById("patrol"),
+      type: document.getElementById("type"),
+      name: document.getElementById("name"),
+      notes: document.getElementById("notes"),
+      approved: document.getElementById("approved")
+    };
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    }
+
+    function render() {
+      const output = document.getElementById("programOutput");
+      if (!items.length) {
+        output.innerHTML = "<p class='muted'>No program items added yet.</p>";
+        return;
+      }
+
+      const sorted = [...items].sort((a, b) => a.slot - b.slot);
+      const pendingCount = sorted.filter((item) => item.approved !== "Approved").length;
+
+      output.innerHTML = `
+        <p><strong>${sorted.length}</strong> items planned · <strong>${pendingCount}</strong> awaiting SPL approval/revision.</p>
+        <ol class="stack" style="padding-left: 18px;">
+          ${sorted.map((item) => `
+            <li>
+              <strong>Slot ${item.slot}:</strong> ${item.type} — ${item.name || "Untitled"} (${item.patrol || "Unassigned patrol"})<br />
+              <span class="muted">Status: ${item.approved}. ${item.notes || "No notes."}</span>
+            </li>
+          `).join("")}
+        </ol>
+      `;
+    }
+
+    document.getElementById("addItem").addEventListener("click", () => {
+      items.push({
+        slot: Number(fields.slot.value) || 1,
+        patrol: fields.patrol.value.trim(),
+        type: fields.type.value,
+        name: fields.name.value.trim(),
+        notes: fields.notes.value.trim(),
+        approved: fields.approved.value
+      });
+      save();
+      render();
+      fields.patrol.value = "";
+      fields.name.value = "";
+      fields.notes.value = "";
+      fields.approved.value = "Pending";
+      fields.slot.value = String(items.length + 1);
+    });
+
+    document.getElementById("clearProgram").addEventListener("click", () => {
+      items.length = 0;
+      save();
+      render();
+      fields.slot.value = "1";
+    });
+
+    render();
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
+    }
+  </script>
+</body>
+</html>
