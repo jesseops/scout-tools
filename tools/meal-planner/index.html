@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Camp Meal Planner</title>
+
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+</head>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
+  <header class="header no-print">
+    <div class="header-inner container">
+      <div class="header-brand">
+        <strong data-layout-title>Camp Meal Planner</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Build balanced meals, shopping lists, and kitchen instructions for campouts.</p>
+      </div>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
+  </header>
+
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" data-page-title="Camp Meal Planner" data-page-subtitle="Build balanced meals, shopping lists, and kitchen instructions for campouts." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Camp Meal Planner","href":"./"}]'>
+    <section class="hero stack">
+      <h1>Camp Meal Planner</h1>
+      <p class="muted">Enter one meal at a time. Keep each meal balanced with protein, produce, and grains/starches, then generate a grouped shopping list and kitchen duty notes.</p>
+    </section>
+
+    <section class="card stack">
+      <h2>Add Meal</h2>
+      <div class="grid cols-2">
+        <div class="field">
+          <label for="mealName">Meal name</label>
+          <input id="mealName" type="text" placeholder="Saturday Breakfast" />
+        </div>
+        <div class="field">
+          <label for="servings">Servings</label>
+          <input id="servings" type="number" min="1" value="8" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="menuItems">Menu items (one per line)</label>
+        <textarea id="menuItems" rows="4" placeholder="Scrambled eggs\nOatmeal\nOranges"></textarea>
+      </div>
+      <div class="grid cols-2">
+        <div class="field">
+          <label for="protein">Protein items (comma separated)</label>
+          <input id="protein" type="text" placeholder="eggs, peanut butter" />
+        </div>
+        <div class="field">
+          <label for="produce">Produce items (comma separated)</label>
+          <input id="produce" type="text" placeholder="oranges, carrots" />
+        </div>
+        <div class="field">
+          <label for="grains">Grain/starch items (comma separated)</label>
+          <input id="grains" type="text" placeholder="oatmeal, tortillas" />
+        </div>
+        <div class="field">
+          <label for="other">Other pantry items (comma separated)</label>
+          <input id="other" type="text" placeholder="salt, oil, syrup" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="kitchenNotes">Kitchen instructions</label>
+        <textarea id="kitchenNotes" rows="3" placeholder="Boil water first. Assign cleanup patrol. Keep sanitizer station ready."></textarea>
+      </div>
+      <div class="row">
+        <button class="button primary" type="button" id="addMeal">Add Meal</button>
+        <button class="button" type="button" id="clearMeals">Clear Planner</button>
+      </div>
+    </section>
+
+    <section class="card stack">
+      <h2>Generated Plan</h2>
+      <div id="mealOutput" class="stack"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "scouttools:meal-planner";
+    const meals = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+    const fields = {
+      mealName: document.getElementById("mealName"),
+      servings: document.getElementById("servings"),
+      menuItems: document.getElementById("menuItems"),
+      protein: document.getElementById("protein"),
+      produce: document.getElementById("produce"),
+      grains: document.getElementById("grains"),
+      other: document.getElementById("other"),
+      kitchenNotes: document.getElementById("kitchenNotes")
+    };
+
+    function parseList(raw, separator = ",") {
+      return raw.split(separator).map((item) => item.trim()).filter(Boolean);
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(meals));
+    }
+
+    function groupedShoppingList() {
+      const groups = { Protein: [], Produce: [], "Grains/Starches": [], Other: [] };
+      meals.forEach((meal) => {
+        groups.Protein.push(...meal.protein);
+        groups.Produce.push(...meal.produce);
+        groups["Grains/Starches"].push(...meal.grains);
+        groups.Other.push(...meal.other);
+      });
+      return groups;
+    }
+
+    function render() {
+      const output = document.getElementById("mealOutput");
+      if (!meals.length) {
+        output.innerHTML = "<p class='muted'>No meals added yet.</p>";
+        return;
+      }
+
+      const mealBlocks = meals.map((meal, index) => `
+        <article class="card stack">
+          <h3>${index + 1}. ${meal.name} (${meal.servings} servings)</h3>
+          <p><strong>Menu:</strong> ${meal.menu.join(", ") || "Not provided"}</p>
+          <p><strong>Kitchen instructions:</strong> ${meal.kitchenNotes || "Not provided"}</p>
+        </article>
+      `).join("");
+
+      const groups = groupedShoppingList();
+      const shoppingList = Object.entries(groups).map(([group, items]) => {
+        const unique = [...new Set(items.map((item) => item.toLowerCase()))].sort();
+        return `<li><strong>${group}:</strong> ${unique.length ? unique.join(", ") : "none"}</li>`;
+      }).join("");
+
+      output.innerHTML = `
+        <div class="stack">
+          <h3>Menu by Meal</h3>
+          ${mealBlocks}
+          <h3>Shopping List</h3>
+          <ul style="padding-left: 18px;">${shoppingList}</ul>
+        </div>
+      `;
+    }
+
+    document.getElementById("addMeal").addEventListener("click", () => {
+      if (!fields.mealName.value.trim()) {
+        fields.mealName.focus();
+        return;
+      }
+      meals.push({
+        name: fields.mealName.value.trim(),
+        servings: Number(fields.servings.value) || 1,
+        menu: parseList(fields.menuItems.value, "\n"),
+        protein: parseList(fields.protein.value),
+        produce: parseList(fields.produce.value),
+        grains: parseList(fields.grains.value),
+        other: parseList(fields.other.value),
+        kitchenNotes: fields.kitchenNotes.value.trim()
+      });
+      save();
+      render();
+      Object.values(fields).forEach((field) => {
+        if (field.id !== "servings") field.value = "";
+      });
+      fields.servings.value = "8";
+    });
+
+    document.getElementById("clearMeals").addEventListener("click", () => {
+      meals.length = 0;
+      save();
+      render();
+    });
+
+    render();
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
+    }
+  </script>
+</body>
+</html>

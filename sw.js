@@ -1,4 +1,4 @@
-const CACHE_NAME = "scout-tools-v9";
+const CACHE_NAME = "scout-tools-v10";
 const PRECACHE_URLS = [
   "./",
   "./index.html",
@@ -29,6 +29,12 @@ const PRECACHE_URLS = [
   "./tools/ready-resources/index.html",
   "./tools/guide-to-safe-scouting/",
   "./tools/guide-to-safe-scouting/index.html",
+  "./tools/meal-planner/",
+  "./tools/meal-planner/index.html",
+  "./tools/campfire-program-planner/",
+  "./tools/campfire-program-planner/index.html",
+  "./tools/scouts-own-service-planner/",
+  "./tools/scouts-own-service-planner/index.html",
 ];
 
 // 1. Install: Cache the "Application Shell"
