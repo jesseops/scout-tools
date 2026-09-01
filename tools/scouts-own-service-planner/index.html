@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-org="troop">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Scout's Own Service Planner</title>
+
+  <link rel="stylesheet" href="../../assets/css/base.css" />
+  <link rel="stylesheet" href="../../assets/css/theme-pack.css" data-theme-css="pack" disabled />
+  <link rel="stylesheet" href="../../assets/css/theme-troop.css" data-theme-css="troop" disabled />
+  <script src="../../assets/js/theme.js"></script>
+  <script src="../../assets/js/htmx.min.js"></script>
+  <script src="../../assets/js/layout.js"></script>
+</head>
+<body hx-boost="true" hx-target="#app-main" hx-select="#app-main" hx-swap="outerHTML" hx-push-url="true">
+  <header class="header no-print">
+    <div class="header-inner container">
+      <div class="header-brand">
+        <strong data-layout-title>Scout's Own Service Planner</strong>
+        <p class="muted header-title-subtitle" data-layout-subtitle>Plan a non-denominational Sunday morning service led by the chaplain aide.</p>
+      </div>
+      <div class="header-actions">
+        <button class="header-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="headerPanel">
+          <span class="header-toggle-icon" aria-hidden="true"></span>
+          <span class="sr-only">Toggle header menu</span>
+        </button>
+        <div class="header-panel is-collapsed" id="headerPanel" data-nav-panel hidden>
+          <div class="theme-controls" aria-label="Theme settings">
+            <div class="theme-control field">
+              <label for="orgSelect">Organization</label>
+              <select id="orgSelect" data-theme-control="org">
+                <option value="pack">Cub Scouts Pack</option>
+                <option value="troop">Scouting America Troop</option>
+              </select>
+            </div>
+          </div>
+          <button class="button theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+            <span data-theme-toggle-label>Light</span>
+          </button>
+        </div>
+      </div>
+    </div>
+    <nav class="breadcrumbs container" aria-label="Breadcrumb">
+      <ol class="breadcrumb-list" data-layout-breadcrumbs></ol>
+    </nav>
+  </header>
+
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" data-page-title="Scout's Own Service Planner" data-page-subtitle="Plan a non-denominational Sunday morning service led by the chaplain aide." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Scout\'s Own Service Planner","href":"./"}]'>
+    <section class="hero stack">
+      <h1>Scout's Own Service Planner</h1>
+      <p class="muted">Create a respectful non-denominational service flow with songs, prayer, reading, and reflection. Keep language welcoming for scouts of all faith backgrounds.</p>
+    </section>
+
+    <section class="card stack">
+      <h2>Service Details</h2>
+      <div class="grid cols-2">
+        <div class="field">
+          <label for="theme">Service theme</label>
+          <input id="theme" type="text" placeholder="Gratitude in the Outdoors" />
+        </div>
+        <div class="field">
+          <label for="leader">Chaplain aide / youth leader</label>
+          <input id="leader" type="text" placeholder="Avery M." />
+        </div>
+      </div>
+      <div class="field">
+        <label for="songs">Songs (one per line)</label>
+        <textarea id="songs" rows="3" placeholder="Scout Vespers\nThis Land Is Your Land"></textarea>
+      </div>
+      <div class="field">
+        <label for="prayer">Opening prayer or invocation</label>
+        <textarea id="prayer" rows="3" placeholder="Invite everyone to a moment of gratitude and respect."></textarea>
+      </div>
+      <div class="field">
+        <label for="reading">Scripture, poem, or inspirational reading</label>
+        <textarea id="reading" rows="3" placeholder="A short reading about service, kindness, or stewardship."></textarea>
+      </div>
+      <div class="field">
+        <label for="reflection">Reflection prompt</label>
+        <textarea id="reflection" rows="3" placeholder="What is one way you can serve someone this week?"></textarea>
+      </div>
+      <div class="field">
+        <label for="closing">Closing thought or benediction</label>
+        <textarea id="closing" rows="3" placeholder="Send scouts out with a call to kindness and service."></textarea>
+      </div>
+      <div class="row">
+        <button class="button primary" type="button" id="generateService">Generate Service Outline</button>
+        <button class="button" type="button" id="clearService">Clear Planner</button>
+      </div>
+    </section>
+
+    <section class="card stack">
+      <h2>Service Outline</h2>
+      <div id="serviceOutput" class="stack"></div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = "scouttools:scouts-own-service";
+    const fields = {
+      theme: document.getElementById("theme"),
+      leader: document.getElementById("leader"),
+      songs: document.getElementById("songs"),
+      prayer: document.getElementById("prayer"),
+      reading: document.getElementById("reading"),
+      reflection: document.getElementById("reflection"),
+      closing: document.getElementById("closing")
+    };
+
+    function parseLines(value) {
+      return value.split("\n").map((line) => line.trim()).filter(Boolean);
+    }
+
+    function save(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function render(data) {
+      const output = document.getElementById("serviceOutput");
+      if (!data) {
+        output.innerHTML = "<p class='muted'>No outline generated yet.</p>";
+        return;
+      }
+
+      const songs = parseLines(data.songs).map((song) => `<li>${song}</li>`).join("") || "<li>No songs listed.</li>";
+      output.innerHTML = `
+        <article class="stack">
+          <p><strong>Theme:</strong> ${data.theme || "Not set"}</p>
+          <p><strong>Led by:</strong> ${data.leader || "Not set"}</p>
+          <h3>Order of Service</h3>
+          <ol style="padding-left: 18px;" class="stack">
+            <li>
+              <strong>Gathering Songs</strong>
+              <ul style="padding-left: 18px;">${songs}</ul>
+            </li>
+            <li><strong>Opening Prayer:</strong> ${data.prayer || "Not provided"}</li>
+            <li><strong>Reading:</strong> ${data.reading || "Not provided"}</li>
+            <li><strong>Personal Reflection:</strong> ${data.reflection || "Not provided"}</li>
+            <li><strong>Closing Thought:</strong> ${data.closing || "Not provided"}</li>
+          </ol>
+        </article>
+      `;
+    }
+
+    document.getElementById("generateService").addEventListener("click", () => {
+      const payload = {
+        theme: fields.theme.value.trim(),
+        leader: fields.leader.value.trim(),
+        songs: fields.songs.value,
+        prayer: fields.prayer.value.trim(),
+        reading: fields.reading.value.trim(),
+        reflection: fields.reflection.value.trim(),
+        closing: fields.closing.value.trim()
+      };
+      save(payload);
+      render(payload);
+    });
+
+    document.getElementById("clearService").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      Object.values(fields).forEach((field) => {
+        field.value = "";
+      });
+      render(null);
+    });
+
+    const existing = localStorage.getItem(STORAGE_KEY);
+    if (existing) {
+      const data = JSON.parse(existing);
+      Object.entries(fields).forEach(([key, field]) => {
+        field.value = data[key] || "";
+      });
+      render(data);
+    } else {
+      render(null);
+    }
+
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("../../sw.js");
+    }
+  </script>
+</body>
+</html>
