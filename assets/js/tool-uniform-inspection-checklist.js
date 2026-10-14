@@ -9,34 +9,39 @@
         {
           title: "Uniform Basics",
           items: [
-            { key: "class-a", label: "Class A Shirt", type: "per", points: 10, value: 0 },
-            { key: "neckerchief", label: "Neckerchief", type: "per", points: 5, value: 0 },
-            { key: "pants", label: "BSA Pants/Shorts", type: "per", points: 10, value: 0 },
-            { key: "belt", label: "BSA Belt", type: "per", points: 5, value: 0 },
-            { key: "socks", label: "BSA Socks", type: "per", points: 10, value: 0 },
+            { key: "book", label: "Boy Scout Book (have to show it)", type: "per", points: 20, value: 0 },
+            { key: "totin-chit", label: "Totin Chit (have to show it)", type: "per", points: 2.5, value: 0 },
+            { key: "fire-chit", label: "Fire’n Chit (have to show it)", type: "per", points: 2.5, value: 0 },
+            { key: "headgear", label: "Head Gear (Official Scout Hat/Beanie)*", type: "per", points: 5, value: 0 },
+            { key: "class-a", label: "Shirt", type: "per", points: 5, value: 0 },
+            { key: "neckerchief", label: "Neckwear*", type: "per", points: 5, value: 0 },
+            { key: "pants", label: "Pants/Shorts", type: "per", points: 10, value: 0 },
+            { key: "belt", label: "Belt", type: "per", points: 5, value: 0 },
+            { key: "socks", label: "Socks", type: "per", points: 5, value: 0 },
+            { key: "flag", label: "Patrol Flag", type: "pass", points: 10, value: "no" },
             { key: "epaulets", label: "Shoulder Epaulets", type: "per", points: 5, value: 0 },
-            { key: "flag", label: "Patrol Flag", type: "pass", points: 15, value: "no" },
           ],
         },
         {
           title: "Right Sleeve",
           items: [
-            { key: "us-flag", label: "US Flag", type: "per", points: 5, value: 0 },
-            { key: "patrol-emblem", label: "Patrol Emblem", type: "per", points: 5, value: 0 },
+            { key: "us-flag", label: "US Flag", type: "per", points: 2.5, value: 0 },
+            { key: "patrol-emblem", label: "Patrol Emblem", type: "per", points: 7.5, value: 0 },
           ],
         },
         {
           title: "Left Sleeve",
           items: [
-            { key: "csp", label: "Council Emblem (CSP)", type: "per", points: 5, value: 0 },
-            { key: "troop-number", label: "Troop Number", type: "per", points: 5, value: 0 },
+            { key: "csp", label: "Council Emblem (CSP)", type: "per", points: 2, value: 0 },
+            { key: "troop-number", label: "Troop Number", type: "per", points: 3, value: 0 },
           ],
         },
         {
           title: "Left Pocket",
           items: [
-            { key: "rank", label: "Current Rank", type: "per", points: 10, value: 0 },
-            { key: "crest", label: "Scouting World Crest", type: "per", points: 10, value: 0 },
+            { key: "rank", label: "Rank", type: "per", points: 2, value: 0 },
+            { key: "crest", label: "World Crest", type: "per", points: 2, value: 0 },
+            { key: "name-tag", label: "Name Tag", type: "per", points: 6, value: 0 },
           ],
         },
       ],
@@ -46,6 +51,16 @@
         const mm = String(today.getMonth() + 1).padStart(2, "0");
         const dd = String(today.getDate()).padStart(2, "0");
         this.date = `${yyyy}-${mm}-${dd}`;
+      },
+      reset() {
+        if (!confirm("Clear all fields?")) return;
+        this.patrolName = "";
+        this.present = 0;
+        this.inspector = "";
+        this.init();
+        this.sections.forEach(section => section.items.forEach(item => {
+          item.value = item.type === "pass" ? "no" : 0;
+        }));
       },
       pointsFor(item) {
         if (item.type === "pass") {
@@ -77,42 +92,14 @@
 
     const form = main.querySelector("#inspectionForm");
     const btnPrint = main.querySelector("#btnPrint");
-    const btnStart = main.querySelector("#btnStart");
-    const btnReset = main.querySelector("#btnReset");
 
-    if (!form || !btnPrint || !btnStart || !btnReset) return;
+    if (!form || !btnPrint) return;
 
     if (btnPrint.dataset.bound !== "true") {
       btnPrint.dataset.bound = "true";
       btnPrint.addEventListener("click", () => {
         if (!form.reportValidity()) return;
         window.print();
-      });
-    }
-
-    if (btnStart.dataset.bound !== "true") {
-      btnStart.dataset.bound = "true";
-      btnStart.addEventListener("click", () => {
-        form.reportValidity();
-      });
-    }
-
-    if (btnReset.dataset.bound !== "true") {
-      btnReset.dataset.bound = "true";
-      btnReset.addEventListener("click", () => {
-        if (!confirm("Clear all fields?")) return;
-        const alpineRoot = main.matches("[x-data]") ? main : main.querySelector("[x-data]");
-        if (alpineRoot && alpineRoot.__x && alpineRoot.__x.$data) {
-          const data = alpineRoot.__x.$data;
-          data.patrolName = "";
-          data.present = 0;
-          data.inspector = "";
-          data.sections.forEach((section) => {
-            section.items.forEach((item) => {
-              item.value = item.type === "pass" ? "no" : 0;
-            });
-          });
-        }
       });
     }
   };
