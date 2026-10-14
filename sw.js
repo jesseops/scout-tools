@@ -1,4 +1,4 @@
-const CACHE_NAME = "scout-tools-v9";
+const CACHE_NAME = "scout-tools-v10";
 const PRECACHE_URLS = [
   "./",
   "./index.html",

@@ -51,16 +51,15 @@
     </nav>
   </header>
 
-  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" x-data="inspectionSheet()" x-init="init()" data-page-title="Uniform Inspection Checklist" data-page-subtitle="Complete all fields before turning in." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Uniform Inspection Checklist","href":"./"}]'>
+  <main id="app-main" class="container stack" style="padding: 24px 16px 40px;" x-data="inspectionSheet()" data-page-title="Uniform Inspection Checklist" data-page-subtitle="Complete all fields before turning in." data-breadcrumbs='[{"label":"Home","href":"../../"},{"label":"Uniform Inspection Checklist","href":"./"}]'>
     <form id="inspectionForm" class="stack">
       <section class="stack">
         <div class="stack">
           <h1>Uniform Inspection Checklist</h1>
           <p class="muted">Complete all fields before turning in.</p>
-          <div class="row">
-            <button class="primary" id="btnStart" type="button">Start inspection</button>
+          <div class="row no-print">
             <button id="btnPrint" type="button">Print</button>
-            <button id="btnReset" type="button">Reset</button>
+            <button id="btnReset" type="button" @click="reset()">Reset</button>
           </div>
         </div>
 
@@ -70,7 +69,7 @@
             <input id="patrolName" type="text" placeholder="e.g., Owls" x-model="patrolName" required />
           </div>
           <div class="field">
-            <label for="patrolCount">Members Present</label>
+            <label for="patrolCount">Scouts in Patrol (A)</label>
             <input id="patrolCount" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g., 7" x-model.number="present" required />
           </div>
           <div class="field">
@@ -89,9 +88,9 @@
           <thead>
             <tr>
               <th>Item</th>
-              <th>Type</th>
-              <th>Count / Result</th>
-              <th>Points</th>
+              <th>Points Allowed (C)</th>
+              <th>Scouts with Item (B) / Result</th>
+              <th>Points (B/A × C)</th>
             </tr>
           </thead>
           <template x-for="section in sections" :key="section.title">
@@ -100,13 +99,13 @@
               <template x-for="item in section.items" :key="item.key">
                 <tr>
                   <td x-text="item.label"></td>
-                  <td x-text="item.type === 'per' ? 'Per Youth' : 'Pass/Fail'"></td>
+                  <td x-text="item.points"></td>
                   <td>
                     <template x-if="item.type === 'per'">
-                      <input type="number" min="0" :max="present || 0" step="1" inputmode="numeric" x-model.number="item.value" />
+                      <input type="number" min="0" :max="present || 0" step="1" inputmode="numeric" x-model.number="item.value" :aria-label="item.label + ': scouts with item'" required />
                     </template>
                     <template x-if="item.type === 'pass'">
-                      <select x-model="item.value">
+                      <select x-model="item.value" :aria-label="item.label">
                         <option value="no">No</option>
                         <option value="yes">Yes</option>
                       </select>
@@ -125,7 +124,8 @@
         <span><span x-text="format(total)"></span> / <span x-text="format(maxPoints)"></span></span>
       </section>
 
-      <p class="muted">Per youth items score based on the percentage of members present who have the item.</p>
+      <p class="muted">Each count-based item scores (scouts with item ÷ scouts in patrol) × points allowed. Patrol Flag scores 10 for Yes or 0 for No.</p>
+      <p class="muted">*NYLT gear is OK for headgear and neckwear if the Scout took NYLT in the current year.</p>
     </form>
 
   </main>
